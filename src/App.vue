@@ -3,24 +3,31 @@
     <header class="bg-white shadow-sm px-8 py-4 border-b border-gray-200 flex-none">
       <h1 class="text-2xl font-bold mb-4 text-gray-800">Writer by Mario</h1>
       <div class="flex gap-4 items-center">
-        <select 
-          v-model="selectedTool" 
-          class="px-4 py-2 rounded-md border border-gray-200 text-gray-800 min-w-[200px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          <option value="fix">Fix Grammar & Spelling</option>
-          <option value="translateFix">Translate & Fix (Spanish → English)</option>
-          <option value="improve">Improve Writing</option>
-          <option value="formal">Make Formal</option>
-          <option value="casual">Make Casual</option>
-          <option value="concise">Make Concise</option>
-        </select>
+        <div class="flex items-center gap-4">
+          <label class="flex items-center gap-2 text-gray-600">
+            <input 
+              type="checkbox" 
+              v-model="onlyGrammar"
+              class="rounded text-blue-600 focus:ring-blue-500"
+            >
+            Only Fix Grammar
+          </label>
+          <label class="flex items-center gap-2 text-gray-600">
+            <input 
+              type="checkbox" 
+              v-model="handleSpanish"
+              class="rounded text-blue-600 focus:ring-blue-500"
+            >
+            Handle Spanish Text
+          </label>
+        </div>
         <button 
           @click="processText" 
           :disabled="isProcessing"
           class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span v-if="isProcessing">Processing...</span>
-          <span v-else>Process Text</span>
+          <span v-else>Improve Writing</span>
         </button>
         <button 
           @click="clearText" 
@@ -122,20 +129,22 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import { textProcessors } from './services/llm'
+import { textProcessor } from './services/llm'
 import { mdiArrowLeft } from '@mdi/js'
 import DiffMatchPatch from 'diff-match-patch'
 
 const STORAGE_KEYS = {
   INPUT: 'writer-input-text',
   PROCESSED: 'writer-processed-text',
-  SELECTED_TOOL: 'writer-selected-tool',
+  ONLY_GRAMMAR: 'writer-only-grammar',
+  HANDLE_SPANISH: 'writer-handle-spanish',
   SHOW_DIFF: 'writer-show-diff'
 }
 
 const inputText = ref(localStorage.getItem(STORAGE_KEYS.INPUT) || '')
 const processedText = ref(localStorage.getItem(STORAGE_KEYS.PROCESSED) || '')
-const selectedTool = ref(localStorage.getItem(STORAGE_KEYS.SELECTED_TOOL) || 'fix')
+const onlyGrammar = ref(localStorage.getItem(STORAGE_KEYS.ONLY_GRAMMAR) === 'true')
+const handleSpanish = ref(localStorage.getItem(STORAGE_KEYS.HANDLE_SPANISH) !== 'false') // Default to true
 const isProcessing = ref(false)
 const error = ref(null)
 const showDiff = ref(localStorage.getItem(STORAGE_KEYS.SHOW_DIFF) === 'true')
@@ -164,8 +173,12 @@ watch(processedText, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.PROCESSED, newValue)
 })
 
-watch(selectedTool, (newValue) => {
-  localStorage.setItem(STORAGE_KEYS.SELECTED_TOOL, newValue)
+watch(onlyGrammar, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.ONLY_GRAMMAR, newValue)
+})
+
+watch(handleSpanish, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.HANDLE_SPANISH, newValue)
 })
 
 const processText = async () => {
@@ -178,12 +191,11 @@ const processText = async () => {
   error.value = null
 
   try {
-    const processor = textProcessors[selectedTool.value]
-    if (!processor) {
-      throw new Error('This processor is not implemented yet.')
-    }
+    const result = await textProcessor.processor(inputText.value, {
+      onlyGrammar: onlyGrammar.value,
+      handleSpanish: handleSpanish.value
+    })
 
-    const result = await processor.processor(inputText.value)
     if (!result) {
       throw new Error('No result received from the processor.')
     }

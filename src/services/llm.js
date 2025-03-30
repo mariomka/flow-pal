@@ -87,16 +87,30 @@ export async function translateAndFix(text) {
   return await llm.process(text, instruction)
 }
 
-export async function improveWriting(text) {
+export async function improveWriting(text, options = { onlyGrammar: false, handleSpanish: true }) {
   const llm = new LLMProvider()
-  const instruction = `You are an expert English language editor with native-level mastery.
-    Your task is to improve the provided text by:
+  
+  let instruction = `You are an expert English language editor with native-level mastery.
+    Your task is to ${options.onlyGrammar ? 'fix grammar and spelling errors only' : 'improve the provided text by'}:
+    ${options.onlyGrammar ? `
+    1. Fixing grammar and spelling errors
+    2. Making minimal changes to preserve the original writing style
+    3. Not changing word choice or phrasing unless necessary for grammar
+    ` : `
     1. Enhancing clarity and flow while maintaining the original meaning
     2. Using natural, idiomatic English expressions
     3. Choosing vocabulary and phrases that native English speakers commonly use
     4. Improving sentence structure for better readability
-    5. Maintaining an appropriate tone (formal/casual) based on the context
+    5. Maintaining an appropriate tone based on the context
     6. Fixing any grammar or spelling errors
+    `}
+
+    ${options.handleSpanish ? `
+    Additional Spanish handling:
+    - Identify any Spanish words or phrases in the text
+    - Translate them to natural, contextually appropriate English
+    - Ensure the translations flow naturally with the rest of the text
+    ` : ''}
 
     IMPORTANT FORMATTING RULES:
     - Preserve all line breaks exactly as they appear in the original text
@@ -105,9 +119,8 @@ export async function improveWriting(text) {
     - Respect the original text's list formats and structural elements
     - If text has multiple paragraphs, maintain the same paragraph breaks
     
-    The goal is to make the text sound as if it was written by a skilled native English speaker while keeping the exact same formatting.
-    Return only the improved text without any explanations or comments.
-    If the text is already well-written, make minimal changes to preserve the author's voice and formatting.`
+    The goal is to ${options.onlyGrammar ? 'fix grammar while preserving the original writing as much as possible' : 'make the text sound as if it was written by a skilled native English speaker'} while keeping the exact same formatting.
+    Return only the ${options.onlyGrammar ? 'corrected' : 'improved'} text without any explanations or comments.`
   
   return await llm.process(text, instruction)
 }
@@ -130,4 +143,11 @@ export const textProcessors = {
     description: 'Enhances text to sound more natural and native-like while maintaining meaning'
   }
   // Add more processors here as needed
+}
+
+// Export the processor with its configuration
+export const textProcessor = {
+  name: 'Improve Writing',
+  processor: improveWriting,
+  description: 'Enhances text to sound more natural and native-like while maintaining meaning'
 } 
