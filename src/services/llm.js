@@ -60,33 +60,6 @@ class LLMProvider {
   }
 }
 
-// Text processing functions
-export async function fixText(text) {
-  const llm = new LLMProvider()
-  const instruction = `You are a professional editor focused on fixing grammar and spelling errors.
-    Fix any grammar and spelling errors in the provided text.
-    Maintain the original meaning, style, and formatting.
-    Return only the corrected text without any explanations or additional comments.
-    If the text is already correct, return it as is.`
-  
-  return await llm.process(text, instruction)
-}
-
-export async function translateAndFix(text) {
-  const llm = new LLMProvider()
-  const instruction = `You are a bilingual Spanish-English editor and translator.
-    Your task is to:
-    1. Identify any Spanish words or phrases in the provided text
-    2. Translate them to English, choosing the most natural and contextually appropriate translation
-    3. Fix any grammar or spelling errors in the entire text
-    4. Ensure the final text flows naturally in English
-    
-    Return only the final English text without any explanations or comments.
-    If you encounter ambiguous Spanish terms, choose the most likely meaning based on context.`
-  
-  return await llm.process(text, instruction)
-}
-
 export async function improveWriting(text, options = { onlyGrammar: false, handleSpanish: true }) {
   const llm = new LLMProvider()
   
@@ -123,26 +96,6 @@ export async function improveWriting(text, options = { onlyGrammar: false, handl
     Return only the ${options.onlyGrammar ? 'corrected' : 'improved'} text without any explanations or comments.`
   
   return await llm.process(text, instruction)
-}
-
-// Export other processing functions as needed
-export const textProcessors = {
-  fix: {
-    name: 'Fix Grammar & Spelling',
-    processor: fixText,
-    description: 'Corrects grammar and spelling errors while maintaining the original meaning'
-  },
-  translateFix: {
-    name: 'Translate & Fix (Spanish → English)',
-    processor: translateAndFix,
-    description: 'Translates Spanish words/phrases to English and fixes grammar'
-  },
-  improve: {
-    name: 'Improve Writing',
-    processor: improveWriting,
-    description: 'Enhances text to sound more natural and native-like while maintaining meaning'
-  }
-  // Add more processors here as needed
 }
 
 // Export the processor with its configuration
