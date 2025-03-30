@@ -3,7 +3,7 @@ import { ChatOpenAI } from '@langchain/openai'
 // LLM Configuration
 const config = {
   openai: {
-    modelName: 'gpt-3.5-turbo',
+    modelName: 'gpt-4',
     temperature: 0.3, // Lower temperature for more consistent, focused responses
     apiKey: import.meta.env.VITE_OPENAI_API_KEY
   }
