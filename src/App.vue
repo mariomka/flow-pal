@@ -2,9 +2,29 @@
   <div class="min-h-screen bg-gray-50 flex flex-col">
     <header class="bg-white shadow-sm px-8 py-4 border-b border-gray-200 flex-none">
       <h1 class="text-2xl font-bold mb-4 text-gray-800">Writer by Mario</h1>
-      <div class="flex gap-4 items-center mb-4">
+      <div class="flex items-center gap-2 mb-2">
+        <button
+          @click="showInstructions = !showInstructions"
+          class="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1"
+        >
+          <svg 
+            class="w-4 h-4 transition-transform"
+            :class="{ 'rotate-90': showInstructions }"
+            viewBox="0 0 24 24"
+          >
+            <path 
+              d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+              fill="currentColor"
+            />
+          </svg>
+          Custom Instructions
+        </button>
+      </div>
+      <div 
+        v-if="showInstructions"
+        class="mb-4 transition-all duration-200"
+      >
         <div class="flex-1">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Custom Instructions (Optional)</label>
           <textarea
             v-model="customInstructions"
             placeholder="Add your custom instructions for the AI here..."
@@ -168,7 +188,8 @@ const STORAGE_KEYS = {
   ONLY_GRAMMAR: 'writer-only-grammar',
   HANDLE_SPANISH: 'writer-handle-spanish',
   SHOW_DIFF: 'writer-show-diff',
-  CUSTOM_INSTRUCTIONS: 'writer-custom-instructions'
+  CUSTOM_INSTRUCTIONS: 'writer-custom-instructions',
+  SHOW_INSTRUCTIONS: 'writer-show-instructions'
 }
 
 const inputText = ref(localStorage.getItem(STORAGE_KEYS.INPUT) || '')
@@ -176,6 +197,7 @@ const processedText = ref(localStorage.getItem(STORAGE_KEYS.PROCESSED) || '')
 const onlyGrammar = ref(localStorage.getItem(STORAGE_KEYS.ONLY_GRAMMAR) === 'true')
 const handleSpanish = ref(localStorage.getItem(STORAGE_KEYS.HANDLE_SPANISH) !== 'false') // Default to true
 const customInstructions = ref(localStorage.getItem(STORAGE_KEYS.CUSTOM_INSTRUCTIONS) || '')
+const showInstructions = ref(localStorage.getItem(STORAGE_KEYS.SHOW_INSTRUCTIONS) === 'true')
 const isProcessing = ref(false)
 const error = ref(null)
 const showDiff = ref(localStorage.getItem(STORAGE_KEYS.SHOW_DIFF) === 'true')
@@ -196,6 +218,11 @@ const textDiff = computed(() => {
 // Watch for showDiff changes and save to localStorage
 watch(showDiff, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.SHOW_DIFF, newValue)
+})
+
+// Watch for showInstructions changes and save to localStorage
+watch(showInstructions, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.SHOW_INSTRUCTIONS, newValue)
 })
 
 // Watch for changes and save to localStorage
