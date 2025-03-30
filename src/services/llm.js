@@ -87,6 +87,24 @@ export async function translateAndFix(text) {
   return await llm.process(text, instruction)
 }
 
+export async function improveWriting(text) {
+  const llm = new LLMProvider()
+  const instruction = `You are an expert English language editor with native-level mastery.
+    Your task is to improve the provided text by:
+    1. Enhancing clarity and flow while maintaining the original meaning
+    2. Using natural, idiomatic English expressions
+    3. Choosing vocabulary and phrases that native English speakers commonly use
+    4. Improving sentence structure for better readability
+    5. Maintaining an appropriate tone (formal/casual) based on the context
+    6. Fixing any grammar or spelling errors
+    
+    The goal is to make the text sound as if it was written by a skilled native English speaker.
+    Return only the improved text without any explanations or comments.
+    If the text is already well-written, make minimal changes to preserve the author's voice.`
+  
+  return await llm.process(text, instruction)
+}
+
 // Export other processing functions as needed
 export const textProcessors = {
   fix: {
@@ -98,6 +116,11 @@ export const textProcessors = {
     name: 'Translate & Fix (Spanish → English)',
     processor: translateAndFix,
     description: 'Translates Spanish words/phrases to English and fixes grammar'
+  },
+  improve: {
+    name: 'Improve Writing',
+    processor: improveWriting,
+    description: 'Enhances text to sound more natural and native-like while maintaining meaning'
   }
   // Add more processors here as needed
 } 
