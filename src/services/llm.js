@@ -60,7 +60,7 @@ class LLMProvider {
   }
 }
 
-export async function improveWriting(text, options = { onlyGrammar: false, handleSpanish: true }) {
+export async function improveWriting(text, options = { onlyGrammar: false, handleSpanish: true, customInstructions: '' }) {
   const llm = new LLMProvider()
   
   let instruction = `You are an expert English language editor with native-level mastery.
@@ -83,6 +83,11 @@ export async function improveWriting(text, options = { onlyGrammar: false, handl
     - Identify any Spanish words or phrases in the text
     - Translate them to natural, contextually appropriate English
     - Ensure the translations flow naturally with the rest of the text
+    ` : ''}
+
+    ${options.customInstructions ? `
+    Additional custom instructions:
+    ${options.customInstructions}
     ` : ''}
 
     IMPORTANT FORMATTING RULES:

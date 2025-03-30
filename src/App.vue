@@ -2,6 +2,17 @@
   <div class="min-h-screen bg-gray-50 flex flex-col">
     <header class="bg-white shadow-sm px-8 py-4 border-b border-gray-200 flex-none">
       <h1 class="text-2xl font-bold mb-4 text-gray-800">Writer by Mario</h1>
+      <div class="flex gap-4 items-center mb-4">
+        <div class="flex-1">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Custom Instructions (Optional)</label>
+          <textarea
+            v-model="customInstructions"
+            placeholder="Add your custom instructions for the AI here..."
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            rows="2"
+          ></textarea>
+        </div>
+      </div>
       <div class="flex gap-4 items-center">
         <div class="flex items-center gap-4">
           <label class="flex items-center gap-2 text-gray-600">
@@ -156,13 +167,15 @@ const STORAGE_KEYS = {
   PROCESSED: 'writer-processed-text',
   ONLY_GRAMMAR: 'writer-only-grammar',
   HANDLE_SPANISH: 'writer-handle-spanish',
-  SHOW_DIFF: 'writer-show-diff'
+  SHOW_DIFF: 'writer-show-diff',
+  CUSTOM_INSTRUCTIONS: 'writer-custom-instructions'
 }
 
 const inputText = ref(localStorage.getItem(STORAGE_KEYS.INPUT) || '')
 const processedText = ref(localStorage.getItem(STORAGE_KEYS.PROCESSED) || '')
 const onlyGrammar = ref(localStorage.getItem(STORAGE_KEYS.ONLY_GRAMMAR) === 'true')
 const handleSpanish = ref(localStorage.getItem(STORAGE_KEYS.HANDLE_SPANISH) !== 'false') // Default to true
+const customInstructions = ref(localStorage.getItem(STORAGE_KEYS.CUSTOM_INSTRUCTIONS) || '')
 const isProcessing = ref(false)
 const error = ref(null)
 const showDiff = ref(localStorage.getItem(STORAGE_KEYS.SHOW_DIFF) === 'true')
@@ -202,6 +215,10 @@ watch(handleSpanish, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.HANDLE_SPANISH, newValue)
 })
 
+watch(customInstructions, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.CUSTOM_INSTRUCTIONS, newValue)
+})
+
 const processText = async () => {
   if (!inputText.value.trim()) {
     error.value = 'Please enter some text to process.'
@@ -214,7 +231,8 @@ const processText = async () => {
   try {
     const result = await textProcessor.processor(inputText.value, {
       onlyGrammar: onlyGrammar.value,
-      handleSpanish: handleSpanish.value
+      handleSpanish: handleSpanish.value,
+      customInstructions: customInstructions.value
     })
 
     if (!result) {
