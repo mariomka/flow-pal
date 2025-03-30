@@ -41,7 +41,16 @@
     <main class="flex-1 p-8 flex flex-col min-h-0">
       <div class="grid grid-cols-2 gap-8 flex-1 min-h-0">
         <div class="bg-white rounded-lg shadow-sm p-6 flex flex-col min-h-0">
-          <h2 class="text-xl font-semibold text-gray-800 mb-4 flex-none">Your Text</h2>
+          <div class="flex justify-between items-center mb-4 flex-none">
+            <h2 class="text-xl font-semibold text-gray-800">Your Text</h2>
+            <button
+              v-if="inputText"
+              @click="copyToClipboard(inputText, 'input')"
+              class="px-3 py-1 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-sm flex items-center gap-2"
+            >
+              {{ inputCopied ? 'Copied!' : 'Copy Text' }}
+            </button>
+          </div>
           <textarea
             v-model="inputText"
             placeholder="Start writing here..."
@@ -62,19 +71,28 @@
                 Show Changes
               </label>
             </div>
-            <button
-              v-if="processedText"
-              @click="replaceWithProcessed"
-              class="px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-sm flex items-center gap-2"
-            >
-              <svg class="w-4 h-4" viewBox="0 0 24 24">
-                <path 
-                  :d="mdiArrowLeft" 
-                  fill="currentColor"
-                />
-              </svg>
-              Replace Original
-            </button>
+            <div class="flex items-center gap-2">
+              <button
+                v-if="processedText"
+                @click="copyToClipboard(processedText, 'processed')"
+                class="px-3 py-1 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-sm"
+              >
+                {{ processedCopied ? 'Copied!' : 'Copy Text' }}
+              </button>
+              <button
+                v-if="processedText"
+                @click="replaceWithProcessed"
+                class="px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-sm flex items-center gap-2"
+              >
+                <svg class="w-4 h-4" viewBox="0 0 24 24">
+                  <path 
+                    :d="mdiArrowLeft" 
+                    fill="currentColor"
+                  />
+                </svg>
+                Replace Original
+              </button>
+            </div>
           </div>
           <div 
             class="flex-1 w-full p-4 border border-gray-200 rounded-md overflow-y-auto whitespace-pre-wrap font-serif text-lg leading-relaxed min-h-0"
@@ -149,6 +167,9 @@ const isProcessing = ref(false)
 const error = ref(null)
 const showDiff = ref(localStorage.getItem(STORAGE_KEYS.SHOW_DIFF) === 'true')
 
+const inputCopied = ref(false)
+const processedCopied = ref(false)
+
 // Compute the diff between original and processed text
 const textDiff = computed(() => {
   if (!inputText.value || !processedText.value) return []
@@ -220,6 +241,22 @@ const clearText = () => {
     inputText.value = ''
     processedText.value = ''
     error.value = null
+  }
+}
+
+const copyToClipboard = async (text, type) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    if (type === 'input') {
+      inputCopied.value = true
+      setTimeout(() => inputCopied.value = false, 2000)
+    } else {
+      processedCopied.value = true
+      setTimeout(() => processedCopied.value = false, 2000)
+    }
+  } catch (err) {
+    console.error('Failed to copy text:', err)
+    error.value = 'Failed to copy text to clipboard'
   }
 }
 </script>
