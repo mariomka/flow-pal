@@ -81,6 +81,7 @@ export async function improveWriting(text, options = {
       - Use complex sentence structures when appropriate
       - Include proper transitions and academic phrases
       - Avoid colloquialisms and informal language
+      - Follow academic writing conventions
     `,
     business: `
       - Use clear, concise, and professional language
@@ -88,13 +89,7 @@ export async function improveWriting(text, options = {
       - Focus on clarity and actionable information
       - Use business-appropriate terminology
       - Keep sentences brief and well-structured
-    `,
-    casual: `
-      - Use friendly and conversational language
-      - Include natural expressions and colloquialisms
-      - Keep sentences relatively simple and easy to read
-      - Maintain an engaging and personal tone
-      - Use contractions and informal phrases when appropriate
+      - Emphasize professionalism and efficiency
     `,
     technical: `
       - Use precise and specific terminology
@@ -102,6 +97,55 @@ export async function improveWriting(text, options = {
       - Focus on accuracy and detail
       - Use technical terms appropriately
       - Ensure explanations are thorough and exact
+      - Present information in a logical sequence
+    `,
+    creative: `
+      - Use vivid and descriptive language
+      - Incorporate literary devices and imagery
+      - Maintain an engaging and imaginative tone
+      - Create emotional resonance through word choice
+      - Vary sentence structure for dramatic effect
+      - Show rather than tell when appropriate
+    `,
+    journalistic: `
+      - Use clear, concise, and objective language
+      - Follow inverted pyramid structure when appropriate
+      - Focus on facts and accuracy
+      - Maintain neutral tone
+      - Use active voice
+      - Include relevant details efficiently
+    `,
+    casual: `
+      - Use friendly and conversational language
+      - Include natural expressions and colloquialisms
+      - Keep sentences relatively simple and easy to read
+      - Maintain an engaging and personal tone
+      - Use contractions and informal phrases when appropriate
+      - Write as if speaking to a friend
+    `,
+    persuasive: `
+      - Use compelling and convincing language
+      - Include rhetorical devices effectively
+      - Build logical arguments
+      - Use emotional appeals appropriately
+      - Anticipate and address counter-arguments
+      - End with clear calls to action
+    `,
+    marketing: `
+      - Use engaging and benefit-focused language
+      - Create emotional connections with readers
+      - Include persuasive calls to action
+      - Highlight unique value propositions
+      - Use power words and emotional triggers
+      - Maintain brand voice consistency
+    `,
+    simple: `
+      - Use clear, straightforward language
+      - Keep sentences short and direct
+      - Avoid jargon and complex terminology
+      - Explain concepts in simple terms
+      - Use active voice consistently
+      - Focus on readability for general audiences
     `
   }
   
