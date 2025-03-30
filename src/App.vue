@@ -20,6 +20,23 @@
             >
             Handle Spanish Text
           </label>
+          <div class="flex items-center gap-2">
+            <label for="writing-style" class="text-gray-600">Writing Style:</label>
+            <select
+              id="writing-style"
+              v-model="writingStyle"
+              class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            >
+              <option 
+                v-for="style in WRITING_STYLES" 
+                :key="style.id" 
+                :value="style.id"
+                :title="style.description"
+              >
+                {{ style.label }}
+              </option>
+            </select>
+          </div>
         </div>
         <button 
           @click="processText" 
@@ -189,8 +206,18 @@ const STORAGE_KEYS = {
   HANDLE_SPANISH: 'writer-handle-spanish',
   SHOW_DIFF: 'writer-show-diff',
   CUSTOM_INSTRUCTIONS: 'writer-custom-instructions',
-  SHOW_INSTRUCTIONS: 'writer-show-instructions'
+  SHOW_INSTRUCTIONS: 'writer-show-instructions',
+  WRITING_STYLE: 'writer-style'
 }
+
+// Writing styles
+const WRITING_STYLES = [
+  { id: 'preserve', label: 'Preserve Original Style', description: 'Maintain the original writing style while fixing errors' },
+  { id: 'academic', label: 'Academic', description: 'Formal and scholarly tone suitable for academic papers' },
+  { id: 'business', label: 'Business', description: 'Professional and clear tone for business communication' },
+  { id: 'casual', label: 'Casual', description: 'Friendly and conversational tone' },
+  { id: 'technical', label: 'Technical', description: 'Precise and detailed tone for technical documentation' }
+]
 
 const inputText = ref(localStorage.getItem(STORAGE_KEYS.INPUT) || '')
 const processedText = ref(localStorage.getItem(STORAGE_KEYS.PROCESSED) || '')
@@ -201,6 +228,7 @@ const showInstructions = ref(localStorage.getItem(STORAGE_KEYS.SHOW_INSTRUCTIONS
 const isProcessing = ref(false)
 const error = ref(null)
 const showDiff = ref(localStorage.getItem(STORAGE_KEYS.SHOW_DIFF) === 'true')
+const writingStyle = ref(localStorage.getItem(STORAGE_KEYS.WRITING_STYLE) || 'preserve')
 
 const inputCopied = ref(false)
 const processedCopied = ref(false)
@@ -246,6 +274,10 @@ watch(customInstructions, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.CUSTOM_INSTRUCTIONS, newValue)
 })
 
+watch(writingStyle, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.WRITING_STYLE, newValue)
+})
+
 const processText = async () => {
   if (!inputText.value.trim()) {
     error.value = 'Please enter some text to process.'
@@ -259,7 +291,8 @@ const processText = async () => {
     const result = await textProcessor.processor(inputText.value, {
       onlyGrammar: onlyGrammar.value,
       handleSpanish: handleSpanish.value,
-      customInstructions: customInstructions.value
+      customInstructions: customInstructions.value,
+      writingStyle: writingStyle.value
     })
 
     if (!result) {

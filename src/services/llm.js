@@ -60,22 +60,68 @@ class LLMProvider {
   }
 }
 
-export async function improveWriting(text, options = { onlyGrammar: false, handleSpanish: true, customInstructions: '' }) {
+export async function improveWriting(text, options = { 
+  onlyGrammar: false, 
+  handleSpanish: true, 
+  customInstructions: '',
+  writingStyle: 'preserve'
+}) {
   const llm = new LLMProvider()
   
+  // Define style-specific instructions
+  const styleInstructions = {
+    preserve: `
+      - Maintain the original writing style, voice, and tone
+      - Only fix errors while preserving the author's unique expression
+      - Keep the same level of formality and complexity
+    `,
+    academic: `
+      - Use formal academic language and terminology
+      - Maintain an objective and analytical tone
+      - Use complex sentence structures when appropriate
+      - Include proper transitions and academic phrases
+      - Avoid colloquialisms and informal language
+    `,
+    business: `
+      - Use clear, concise, and professional language
+      - Maintain a confident and direct tone
+      - Focus on clarity and actionable information
+      - Use business-appropriate terminology
+      - Keep sentences brief and well-structured
+    `,
+    casual: `
+      - Use friendly and conversational language
+      - Include natural expressions and colloquialisms
+      - Keep sentences relatively simple and easy to read
+      - Maintain an engaging and personal tone
+      - Use contractions and informal phrases when appropriate
+    `,
+    technical: `
+      - Use precise and specific terminology
+      - Maintain a clear and methodical structure
+      - Focus on accuracy and detail
+      - Use technical terms appropriately
+      - Ensure explanations are thorough and exact
+    `
+  }
+  
   let instruction = `You are an expert English language editor with native-level mastery.
-    Your task is to ${options.onlyGrammar ? 'fix grammar and spelling errors only' : 'improve the provided text by'}:
+    Your task is to ${options.onlyGrammar ? 'fix grammar and spelling errors only' : 'improve the provided text'} while:
+
     ${options.onlyGrammar ? `
     1. Fixing grammar and spelling errors
     2. Making minimal changes to preserve the original writing style
     3. Not changing word choice or phrasing unless necessary for grammar
     ` : `
-    1. Enhancing clarity and flow while maintaining the original meaning
-    2. Using natural, idiomatic English expressions
-    3. Choosing vocabulary and phrases that native English speakers commonly use
-    4. Improving sentence structure for better readability
-    5. Maintaining an appropriate tone based on the context
-    6. Fixing any grammar or spelling errors
+    Writing Style Instructions:
+    ${styleInstructions[options.writingStyle]}
+    
+    General Improvements:
+    1. Enhancing clarity and flow while maintaining the intended meaning
+    2. Using appropriate expressions based on the selected style
+    3. Improving sentence structure for better readability
+    4. Maintaining an appropriate tone for the selected style
+    5. Fixing any grammar or spelling errors
     `}
 
     ${options.handleSpanish ? `
@@ -97,7 +143,7 @@ export async function improveWriting(text, options = { onlyGrammar: false, handl
     - Respect the original text's list formats and structural elements
     - If text has multiple paragraphs, maintain the same paragraph breaks
     
-    The goal is to ${options.onlyGrammar ? 'fix grammar while preserving the original writing as much as possible' : 'make the text sound as if it was written by a skilled native English speaker'} while keeping the exact same formatting.
+    The goal is to ${options.onlyGrammar ? 'fix grammar while preserving the original writing as much as possible' : `improve the text according to the ${options.writingStyle === 'preserve' ? 'original' : options.writingStyle} style guidelines`} while keeping the exact same formatting.
     Return only the ${options.onlyGrammar ? 'corrected' : 'improved'} text without any explanations or comments.`
   
   return await llm.process(text, instruction)
