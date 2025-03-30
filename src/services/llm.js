@@ -97,10 +97,17 @@ export async function improveWriting(text) {
     4. Improving sentence structure for better readability
     5. Maintaining an appropriate tone (formal/casual) based on the context
     6. Fixing any grammar or spelling errors
+
+    IMPORTANT FORMATTING RULES:
+    - Preserve all line breaks exactly as they appear in the original text
+    - Maintain paragraph structure and spacing
+    - Keep any special formatting like bullet points, numbering, or indentation
+    - Respect the original text's list formats and structural elements
+    - If text has multiple paragraphs, maintain the same paragraph breaks
     
-    The goal is to make the text sound as if it was written by a skilled native English speaker.
+    The goal is to make the text sound as if it was written by a skilled native English speaker while keeping the exact same formatting.
     Return only the improved text without any explanations or comments.
-    If the text is already well-written, make minimal changes to preserve the author's voice.`
+    If the text is already well-written, make minimal changes to preserve the author's voice and formatting.`
   
   return await llm.process(text, instruction)
 }
