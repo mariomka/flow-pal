@@ -44,7 +44,17 @@
         
         <div class="bg-white rounded-lg shadow-sm p-6 flex flex-col min-h-0">
           <div class="flex justify-between items-center mb-4 flex-none">
-            <h2 class="text-xl font-semibold text-gray-800">Processed Text</h2>
+            <div class="flex items-center gap-4">
+              <h2 class="text-xl font-semibold text-gray-800">Processed Text</h2>
+              <label class="flex items-center gap-2 text-sm text-gray-600">
+                <input 
+                  type="checkbox" 
+                  v-model="showDiff"
+                  class="rounded text-blue-600 focus:ring-blue-500"
+                >
+                Show Changes
+              </label>
+            </div>
             <button
               v-if="processedText"
               @click="replaceWithProcessed"
@@ -62,7 +72,19 @@
           <div 
             class="flex-1 w-full p-4 border border-gray-200 rounded-md overflow-y-auto whitespace-pre-wrap font-serif text-lg leading-relaxed min-h-0"
           >
-            {{ processedText }}
+            <template v-if="showDiff && processedText">
+              <template v-for="(part, index) in textDiff" :key="index">
+                <span
+                  :class="{
+                    'bg-red-100 line-through': part[0] === -1,
+                    'bg-green-100': part[0] === 1,
+                  }"
+                >{{ part[1] }}</span>
+              </template>
+            </template>
+            <template v-else>
+              {{ processedText }}
+            </template>
           </div>
         </div>
       </div>
@@ -99,14 +121,16 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { textProcessors } from './services/llm'
 import { mdiArrowLeft } from '@mdi/js'
+import DiffMatchPatch from 'diff-match-patch'
 
 const STORAGE_KEYS = {
   INPUT: 'writer-input-text',
   PROCESSED: 'writer-processed-text',
-  SELECTED_TOOL: 'writer-selected-tool'
+  SELECTED_TOOL: 'writer-selected-tool',
+  SHOW_DIFF: 'writer-show-diff'
 }
 
 const inputText = ref(localStorage.getItem(STORAGE_KEYS.INPUT) || '')
@@ -114,6 +138,22 @@ const processedText = ref(localStorage.getItem(STORAGE_KEYS.PROCESSED) || '')
 const selectedTool = ref(localStorage.getItem(STORAGE_KEYS.SELECTED_TOOL) || 'fix')
 const isProcessing = ref(false)
 const error = ref(null)
+const showDiff = ref(localStorage.getItem(STORAGE_KEYS.SHOW_DIFF) === 'true')
+
+// Compute the diff between original and processed text
+const textDiff = computed(() => {
+  if (!inputText.value || !processedText.value) return []
+  
+  const dmp = new DiffMatchPatch()
+  const diff = dmp.diff_main(inputText.value, processedText.value)
+  dmp.diff_cleanupSemantic(diff)
+  return diff
+})
+
+// Watch for showDiff changes and save to localStorage
+watch(showDiff, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.SHOW_DIFF, newValue)
+})
 
 // Watch for changes and save to localStorage
 watch(inputText, (newValue) => {
