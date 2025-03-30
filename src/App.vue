@@ -42,12 +42,12 @@
           class="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1"
         >
           <svg 
-            class="w-4 h-4 transition-transform"
-            :class="{ 'rotate-90': showInstructions }"
+            class="w-4 h-4 transform transition-transform"
+            :class="showInstructions ? 'rotate-0' : '-rotate-90'"
             viewBox="0 0 24 24"
           >
             <path 
-              d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+              d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"
               fill="currentColor"
             />
           </svg>
