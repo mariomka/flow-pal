@@ -213,13 +213,9 @@ const STORAGE_KEYS = {
 // Writing styles
 const WRITING_STYLES = [
   { id: 'preserve', label: 'Preserve Original Style', description: 'Maintain the original writing style while fixing errors' },
-  { id: 'academic', label: 'Academic', description: 'Formal and scholarly tone suitable for academic papers' },
   { id: 'business', label: 'Business', description: 'Professional and clear tone for business communication' },
   { id: 'technical', label: 'Technical', description: 'Precise and detailed tone for technical documentation' },
-  { id: 'creative', label: 'Creative', description: 'Engaging and imaginative tone for storytelling and creative writing' },
-  { id: 'journalistic', label: 'Journalistic', description: 'Clear, concise, and objective tone for news and reporting' },
   { id: 'casual', label: 'Casual', description: 'Friendly and conversational tone' },
-  { id: 'persuasive', label: 'Persuasive', description: 'Convincing and compelling tone for argumentative writing' },
   { id: 'marketing', label: 'Marketing', description: 'Engaging and persuasive tone for promotional content' },
   { id: 'simple', label: 'Simple', description: 'Clear and easy-to-understand language for general audiences' }
 ]

@@ -75,14 +75,6 @@ export async function improveWriting(text, options = {
       - Only fix errors while preserving the author's unique expression
       - Keep the same level of formality and complexity
     `,
-    academic: `
-      - Use formal academic language and terminology
-      - Maintain an objective and analytical tone
-      - Use complex sentence structures when appropriate
-      - Include proper transitions and academic phrases
-      - Avoid colloquialisms and informal language
-      - Follow academic writing conventions
-    `,
     business: `
       - Use clear, concise, and professional language
       - Maintain a confident and direct tone
@@ -99,22 +91,6 @@ export async function improveWriting(text, options = {
       - Ensure explanations are thorough and exact
       - Present information in a logical sequence
     `,
-    creative: `
-      - Use vivid and descriptive language
-      - Incorporate literary devices and imagery
-      - Maintain an engaging and imaginative tone
-      - Create emotional resonance through word choice
-      - Vary sentence structure for dramatic effect
-      - Show rather than tell when appropriate
-    `,
-    journalistic: `
-      - Use clear, concise, and objective language
-      - Follow inverted pyramid structure when appropriate
-      - Focus on facts and accuracy
-      - Maintain neutral tone
-      - Use active voice
-      - Include relevant details efficiently
-    `,
     casual: `
       - Use friendly and conversational language
       - Include natural expressions and colloquialisms
@@ -122,14 +98,6 @@ export async function improveWriting(text, options = {
       - Maintain an engaging and personal tone
       - Use contractions and informal phrases when appropriate
       - Write as if speaking to a friend
-    `,
-    persuasive: `
-      - Use compelling and convincing language
-      - Include rhetorical devices effectively
-      - Build logical arguments
-      - Use emotional appeals appropriately
-      - Anticipate and address counter-arguments
-      - End with clear calls to action
     `,
     marketing: `
       - Use engaging and benefit-focused language
