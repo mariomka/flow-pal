@@ -90,7 +90,7 @@
                     fill="currentColor"
                   />
                 </svg>
-                Replace Original
+                Apply
               </button>
             </div>
           </div>
