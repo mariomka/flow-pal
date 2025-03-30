@@ -2,38 +2,7 @@
   <div class="min-h-screen bg-gray-50 flex flex-col">
     <header class="bg-white shadow-sm px-8 py-4 border-b border-gray-200 flex-none">
       <h1 class="text-2xl font-bold mb-4 text-gray-800">Writer by Mario</h1>
-      <div class="flex items-center gap-2 mb-2">
-        <button
-          @click="showInstructions = !showInstructions"
-          class="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1"
-        >
-          <svg 
-            class="w-4 h-4 transition-transform"
-            :class="{ 'rotate-90': showInstructions }"
-            viewBox="0 0 24 24"
-          >
-            <path 
-              d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
-              fill="currentColor"
-            />
-          </svg>
-          Custom Instructions
-        </button>
-      </div>
-      <div 
-        v-if="showInstructions"
-        class="mb-4 transition-all duration-200"
-      >
-        <div class="flex-1">
-          <textarea
-            v-model="customInstructions"
-            placeholder="Add your custom instructions for the AI here..."
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            rows="2"
-          ></textarea>
-        </div>
-      </div>
-      <div class="flex gap-4 items-center">
+      <div class="flex gap-4 items-center mb-4">
         <div class="flex items-center gap-4">
           <label class="flex items-center gap-2 text-gray-600">
             <input 
@@ -66,6 +35,37 @@
         >
           Clear All
         </button>
+      </div>
+      <div class="flex items-center gap-2 mb-2">
+        <button
+          @click="showInstructions = !showInstructions"
+          class="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1"
+        >
+          <svg 
+            class="w-4 h-4 transition-transform"
+            :class="{ 'rotate-90': showInstructions }"
+            viewBox="0 0 24 24"
+          >
+            <path 
+              d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+              fill="currentColor"
+            />
+          </svg>
+          Custom Instructions
+        </button>
+      </div>
+      <div 
+        v-if="showInstructions"
+        class="transition-all duration-200"
+      >
+        <div class="flex-1">
+          <textarea
+            v-model="customInstructions"
+            placeholder="Add your custom instructions for the AI here..."
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            rows="2"
+          ></textarea>
+        </div>
       </div>
     </header>
     
