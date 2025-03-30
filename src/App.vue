@@ -48,7 +48,7 @@
               @click="copyToClipboard(inputText, 'input')"
               class="px-3 py-1 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-sm flex items-center gap-2"
             >
-              {{ inputCopied ? 'Copied!' : 'Copy Text' }}
+              {{ inputCopied ? 'Copied!' : 'Copy' }}
             </button>
           </div>
           <textarea
@@ -77,7 +77,7 @@
                 @click="copyToClipboard(processedText, 'processed')"
                 class="px-3 py-1 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-sm"
               >
-                {{ processedCopied ? 'Copied!' : 'Copy Text' }}
+                {{ processedCopied ? 'Copied!' : 'Copy' }}
               </button>
               <button
                 v-if="processedText"
