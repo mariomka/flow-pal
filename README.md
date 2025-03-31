@@ -1,6 +1,10 @@
 # FlowPal
 
-A sophisticated writing enhancement tool that helps improve your text while maintaining your intended style. Built with Vue.js and powered by GPT-4.
+FlowPal is a writing enhancement tool designed to assist users in improving their text by maintaining the intended style while correcting errors. It leverages the capabilities of Vue.js and an LLM to provide a user-friendly interface for text processing and style-specific improvements.
+
+## Personal Note
+
+This project, FlowPal, represents a significant milestone as it is the first project created entirely by AI without any manual code modifications. It marks a new chapter in my journey, providing invaluable assistance in enhancing my English writing skills. I am excited to see how this tool will continue to support my growth and development.
 
 ## Features
 
@@ -21,7 +25,7 @@ A sophisticated writing enhancement tool that helps improve your text while main
 
 - **User-Friendly Interface**
   - Clean, modern design
-  - Real-time processing
+  - Efficient text processing
   - Copy and paste functionality
   - Easy text comparison
   - Persistent settings
