@@ -1,4 +1,4 @@
-# Writer by Mario
+# FlowPal
 
 A sophisticated writing enhancement tool that helps improve your text while maintaining your intended style. Built with Vue.js and powered by GPT-4.
 

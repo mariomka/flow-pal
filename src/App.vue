@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50 flex flex-col">
     <header class="bg-white shadow-sm px-8 py-4 border-b border-gray-200 flex-none">
-      <h1 class="text-2xl font-bold mb-4 text-gray-800">Writer by Mario</h1>
+      <h1 class="text-2xl font-bold mb-4 text-gray-800">FlowPal</h1>
       <div class="flex gap-4 items-center mb-4">
         <div class="flex items-center gap-4">
           <label class="flex items-center gap-2 text-gray-600">
