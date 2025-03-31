@@ -88,8 +88,8 @@
     
     <main class="flex-1 p-8 flex flex-col min-h-0">
       <div class="grid grid-cols-2 gap-8 flex-1 min-h-0">
-        <div class="bg-white rounded-lg shadow-sm p-6 flex flex-col min-h-0">
-          <div class="flex justify-between items-center mb-4 flex-none">
+        <div class="bg-white rounded-lg shadow-sm p-6 flex flex-col flex-1">
+          <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-semibold text-gray-800">Your Text</h2>
             <button
               v-if="inputText"
@@ -100,9 +100,11 @@
             </button>
           </div>
           <textarea
+            ref="textareaRef"
             v-model="inputText"
             placeholder="Start writing here..."
-            class="flex-1 w-full p-4 border border-gray-200 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-serif text-lg leading-relaxed min-h-0"
+            class="w-full p-4 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-serif text-lg leading-relaxed overflow-hidden resize-none min-h-[150px] flex-grow"
+            @input="adjustTextareaHeight($event)"
           ></textarea>
         </div>
         
@@ -194,7 +196,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted, nextTick } from 'vue'
 import { textProcessor } from './services/llm'
 import { mdiArrowLeft } from '@mdi/js'
 import DiffMatchPatch from 'diff-match-patch'
@@ -233,6 +235,8 @@ const writingStyle = ref(localStorage.getItem(STORAGE_KEYS.WRITING_STYLE) || 'pr
 
 const inputCopied = ref(false)
 const processedCopied = ref(false)
+
+const textareaRef = ref(null);
 
 // Compute the diff between original and processed text
 const textDiff = computed(() => {
@@ -338,4 +342,16 @@ const copyToClipboard = async (text, type) => {
     error.value = 'Failed to copy text to clipboard'
   }
 }
+
+const adjustTextareaHeight = (event) => {
+  const textarea = event.target;
+  textarea.style.height = 'auto'; // Reset the height
+  textarea.style.height = textarea.scrollHeight + 'px'; // Set the height to the scroll height
+}
+
+onMounted(() => {
+  if (textareaRef.value) {
+    adjustTextareaHeight({ target: textareaRef.value });
+  }
+})
 </script>
