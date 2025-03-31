@@ -5,7 +5,9 @@ const config = {
   openai: {
     modelName: 'gpt-4',
     temperature: 0.3, // Lower temperature for more consistent, focused responses
-    apiKey: import.meta.env.VITE_OPENAI_API_KEY
+    get apiKey() {
+      return localStorage.getItem('openai_api_key') || '';
+    }
   }
 }
 
@@ -13,7 +15,7 @@ const config = {
 class LLMProvider {
   constructor() {
     if (!config.openai.apiKey) {
-      throw new Error('OpenAI API key is not configured')
+      throw new Error('OpenAI API key is not configured. Please enter your API key in the settings.')
     }
 
     this.model = new ChatOpenAI({

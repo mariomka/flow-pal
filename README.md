@@ -45,12 +45,9 @@ This project, FlowPal, represents a significant milestone as it is the first pro
 npm install
 ```
 
-2. Create a `.env` file in the root directory and add your OpenAI API key:
-```
-VITE_OPENAI_API_KEY=your_api_key_here
-```
-
-3. Start the development server:
+2. Start the development server:
 ```bash
 npm run dev
 ```
+
+3. Access the application in your browser and click the settings icon in the top-right corner to enter your OpenAI API key.

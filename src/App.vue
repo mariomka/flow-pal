@@ -1,7 +1,65 @@
 <template>
   <div class="min-h-screen bg-gray-50 flex flex-col">
     <header class="bg-white shadow-sm px-8 py-4 border-b border-gray-200 flex-none">
-      <h1 class="text-2xl font-bold mb-4 text-gray-800">FlowPal</h1>
+      <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold mb-4 text-gray-800">FlowPal</h1>
+        <button 
+          @click="showSettings = !showSettings"
+          class="text-gray-600 hover:text-gray-800"
+          title="Settings"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Settings Modal -->
+      <div 
+        v-if="showSettings"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      >
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">Settings</h2>
+            <button 
+              @click="showSettings = false"
+              class="text-gray-500 hover:text-gray-700"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="mb-4">
+            <label for="api-key" class="block text-sm font-medium text-gray-700 mb-1">
+              OpenAI API Key
+            </label>
+            <input
+              id="api-key"
+              type="password"
+              v-model="openAIKey"
+              placeholder="sk-..."
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+            <p class="mt-1 text-sm text-gray-500">
+              Your API key is stored locally in your browser and never sent to our servers.
+            </p>
+          </div>
+          
+          <div class="flex justify-end">
+            <button
+              @click="showSettings = false"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+      
       <div class="flex gap-4 items-center mb-4">
         <div class="flex items-center gap-4">
           <label class="flex items-center gap-2 text-gray-600">
@@ -219,7 +277,8 @@ const STORAGE_KEYS = {
   CUSTOM_INSTRUCTIONS: 'writer-custom-instructions',
   SHOW_INSTRUCTIONS: 'writer-show-instructions',
   WRITING_STYLE: 'writer-style',
-  SHOW_ONLY_ADDITIONS: 'writer-show-only-additions'
+  SHOW_ONLY_ADDITIONS: 'writer-show-only-additions',
+  API_KEY: 'openai_api_key'
 }
 
 // Writing styles
@@ -249,6 +308,10 @@ const processedCopied = ref(false)
 const textareaRef = ref(null);
 
 const showOnlyAdditions = ref(localStorage.getItem(STORAGE_KEYS.SHOW_ONLY_ADDITIONS) === 'true')
+
+// Add openAIKey state
+const openAIKey = ref(localStorage.getItem(STORAGE_KEYS.API_KEY) || '')
+const showSettings = ref(false)
 
 // Compute the diff between original and processed text
 const textDiff = computed(() => {
@@ -298,6 +361,11 @@ watch(writingStyle, (newValue) => {
 // Watch for showOnlyAdditions changes and save to localStorage
 watch(showOnlyAdditions, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.SHOW_ONLY_ADDITIONS, newValue);
+})
+
+// Add a watch for openAIKey
+watch(openAIKey, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.API_KEY, newValue)
 })
 
 const processText = async () => {
