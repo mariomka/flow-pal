@@ -120,6 +120,14 @@
                 >
                 Show Changes
               </label>
+              <label class="flex items-center gap-2 text-sm text-gray-600">
+                <input 
+                  type="checkbox" 
+                  v-model="showOnlyAdditions"
+                  class="rounded text-blue-600 focus:ring-blue-500"
+                >
+                Show Only Additions
+              </label>
             </div>
             <div class="flex items-center gap-2">
               <button
@@ -150,8 +158,9 @@
             <template v-if="showDiff && processedText">
               <template v-for="(part, index) in textDiff" :key="index">
                 <span
+                  v-if="part[0] === 0 || (showOnlyAdditions && part[0] === 1) || (!showOnlyAdditions && part[0] !== 0)"
                   :class="{
-                    'bg-red-100 line-through': part[0] === -1,
+                    'bg-red-100 line-through': part[0] === -1 && !showOnlyAdditions,
                     'bg-green-100': part[0] === 1,
                   }"
                 >{{ part[1] }}</span>
@@ -209,7 +218,8 @@ const STORAGE_KEYS = {
   SHOW_DIFF: 'writer-show-diff',
   CUSTOM_INSTRUCTIONS: 'writer-custom-instructions',
   SHOW_INSTRUCTIONS: 'writer-show-instructions',
-  WRITING_STYLE: 'writer-style'
+  WRITING_STYLE: 'writer-style',
+  SHOW_ONLY_ADDITIONS: 'writer-show-only-additions'
 }
 
 // Writing styles
@@ -237,6 +247,8 @@ const inputCopied = ref(false)
 const processedCopied = ref(false)
 
 const textareaRef = ref(null);
+
+const showOnlyAdditions = ref(localStorage.getItem(STORAGE_KEYS.SHOW_ONLY_ADDITIONS) === 'true')
 
 // Compute the diff between original and processed text
 const textDiff = computed(() => {
@@ -281,6 +293,11 @@ watch(customInstructions, (newValue) => {
 
 watch(writingStyle, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.WRITING_STYLE, newValue)
+})
+
+// Watch for showOnlyAdditions changes and save to localStorage
+watch(showOnlyAdditions, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.SHOW_ONLY_ADDITIONS, newValue);
 })
 
 const processText = async () => {
