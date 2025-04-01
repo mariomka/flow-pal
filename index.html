@@ -18,8 +18,26 @@
     <meta property="og:image" content="https://mariomka.github.io/flow-pal/images/flowpal-screenshot.png">
     <meta property="og:image:width" content="1400">
     <meta property="og:image:height" content="788">
-    <script type="module" crossorigin src="/flow-pal/assets/index-DnlBfn6x.js"></script>
-    <link rel="stylesheet" crossorigin href="/flow-pal/assets/index-C5iVsq6G.css">
+    
+    <!-- Prevent flash of unstyled content -->
+    <script>
+      // On page load, immediately check for stored theme preference
+      (function() {
+        let theme = localStorage.getItem('flowpal-theme-preference') || 'system';
+        let isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        
+        // Apply appropriate class for Tailwind v4
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+          document.documentElement.classList.remove('light');
+        } else {
+          document.documentElement.classList.remove('dark');
+          document.documentElement.classList.add('light');
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="/flow-pal/assets/index-zHOyh9sN.js"></script>
+    <link rel="stylesheet" crossorigin href="/flow-pal/assets/index-CfjgQNCw.css">
   </head>
   <body>
     <div id="app"></div>
