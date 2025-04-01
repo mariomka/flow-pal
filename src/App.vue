@@ -219,8 +219,10 @@
                   v-if="part[0] === 0 || (showOnlyAdditions && part[0] === 1) || (!showOnlyAdditions && part[0] !== 0)"
                   :class="{
                     'bg-red-100 line-through': part[0] === -1 && !showOnlyAdditions,
-                    'bg-green-100': part[0] === 1,
+                    'bg-green-100 hover:bg-green-200 cursor-pointer transition-colors duration-150 border-b border-dashed border-green-400 hover:border-green-500': part[0] === 1,
                   }"
+                  @click="part[0] === 1 ? handleChangeClick(part, index) : null"
+                  :title="part[0] === 1 ? 'Click to apply this change' : ''"
                 >{{ part[1] }}</span>
               </template>
             </template>
@@ -258,6 +260,14 @@
       class="fixed bottom-4 left-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded shadow-lg"
     >
       Processing your text...
+    </div>
+    
+    <!-- Change applied indicator -->
+    <div 
+      v-if="changeApplied" 
+      class="fixed bottom-4 left-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg transition-opacity duration-300"
+    >
+      Change applied!
     </div>
   </div>
 </template>
@@ -304,6 +314,7 @@ const writingStyle = ref(localStorage.getItem(STORAGE_KEYS.WRITING_STYLE) || 'pr
 
 const inputCopied = ref(false)
 const processedCopied = ref(false)
+const changeApplied = ref(false)
 
 const textareaRef = ref(null);
 
@@ -322,6 +333,88 @@ const textDiff = computed(() => {
   dmp.diff_cleanupSemantic(diff)
   return diff
 })
+
+// Store individual changes as patches for easier application
+const diffPatches = computed(() => {
+  if (!textDiff.value || textDiff.value.length === 0) return [];
+  
+  const dmp = new DiffMatchPatch();
+  const patches = [];
+  
+  // For each addition or deletion, create an isolated patch
+  for (let i = 0; i < textDiff.value.length; i++) {
+    const part = textDiff.value[i];
+    if (part[0] === 0) continue; // Skip unchanged parts
+    
+    if (part[0] === 1) { // Addition
+      // Look for context before and after
+      let contextBefore = '';
+      let contextAfter = '';
+      
+      // Find the unchanged text before this addition (for context)
+      if (i > 0 && textDiff.value[i-1][0] === 0) {
+        const beforeText = textDiff.value[i-1][1];
+        contextBefore = beforeText.substring(Math.max(0, beforeText.length - 40)); // Up to 40 chars of context
+      }
+      
+      // Find the unchanged text after this addition (for context)
+      if (i < textDiff.value.length - 1 && textDiff.value[i+1][0] === 0) {
+        const afterText = textDiff.value[i+1][1];
+        contextAfter = afterText.substring(0, Math.min(40, afterText.length)); // Up to 40 chars of context
+      }
+      
+      // Create a targeted diff for just this addition
+      const targetedDiff = [];
+      if (contextBefore) targetedDiff.push([0, contextBefore]);
+      targetedDiff.push([1, part[1]]); // The addition
+      if (contextAfter) targetedDiff.push([0, contextAfter]);
+      
+      // Create a patch from this diff
+      const patch = dmp.patch_make(targetedDiff);
+      patches.push({ 
+        index: i, 
+        patch, 
+        type: 'addition', 
+        text: part[1],
+        hasContext: !!(contextBefore || contextAfter)
+      });
+    } else if (part[0] === -1) { // Deletion
+      // Look for context before and after
+      let contextBefore = '';
+      let contextAfter = '';
+      
+      // Find the unchanged text before this deletion (for context)
+      if (i > 0 && textDiff.value[i-1][0] === 0) {
+        const beforeText = textDiff.value[i-1][1];
+        contextBefore = beforeText.substring(Math.max(0, beforeText.length - 40)); // Up to 40 chars of context
+      }
+      
+      // Find the unchanged text after this deletion (for context)
+      if (i < textDiff.value.length - 1 && textDiff.value[i+1][0] === 0) {
+        const afterText = textDiff.value[i+1][1];
+        contextAfter = afterText.substring(0, Math.min(40, afterText.length)); // Up to 40 chars of context
+      }
+      
+      // Create a targeted diff for just this deletion
+      const targetedDiff = [];
+      if (contextBefore) targetedDiff.push([0, contextBefore]);
+      targetedDiff.push([-1, part[1]]); // The deletion
+      if (contextAfter) targetedDiff.push([0, contextAfter]);
+      
+      // Create a patch from this diff
+      const patch = dmp.patch_make(targetedDiff);
+      patches.push({ 
+        index: i, 
+        patch, 
+        type: 'deletion', 
+        text: part[1],
+        hasContext: !!(contextBefore || contextAfter)
+      });
+    }
+  }
+  
+  return patches;
+});
 
 // Watch for showDiff changes and save to localStorage
 watch(showDiff, (newValue) => {
@@ -432,6 +525,81 @@ const adjustTextareaHeight = (event) => {
   const textarea = event.target;
   textarea.style.height = 'auto'; // Reset the height
   textarea.style.height = textarea.scrollHeight + 'px'; // Set the height to the scroll height
+}
+
+/**
+ * Handle clicking on a change in the diff view
+ * @param {Array} part - The diff part that was clicked [operation, text]
+ * @param {number} index - The index of the part in the textDiff array
+ */
+const handleChangeClick = (part, index) => {
+  // Only process if it's an addition
+  if (part[0] !== 1) return;
+  
+  try {
+    // Check if there's a deletion immediately before this addition
+    // (this is likely a replacement where we want to replace the deleted text with the added text)
+    const replaceMode = index > 0 && textDiff.value[index-1] && textDiff.value[index-1][0] === -1;
+    if (replaceMode) {
+      // This is a replacement scenario (deletion followed by addition)
+      // We need to find the position of the deletion in the original text
+      
+      // Calculate position in the original text up to the deletion
+      let position = 0;
+      for (let i = 0; i < index - 1; i++) {
+        const currentPart = textDiff.value[i];
+        if (!currentPart) continue;
+        
+        if (currentPart[0] === 0) { // Only unchanged text contributes to position
+          position += currentPart[1].length;
+        }
+      }
+      
+      // Get the deletion text from the previous part
+      const deletionText = textDiff.value[index-1][1];
+      
+      // Replace the deletion with the addition
+      const textBefore = inputText.value.substring(0, position);
+      const textAfter = inputText.value.substring(position + deletionText.length);
+      
+      // Apply the replacement
+      inputText.value = textBefore + part[1] + textAfter;
+    } else {
+      // Simple addition - find the position to insert
+      let position = 0;
+      for (let i = 0; i < index; i++) {
+        const currentPart = textDiff.value[i];
+        if (!currentPart) continue;
+        
+        if (currentPart[0] === 0) { // Only unchanged text contributes to position
+          position += currentPart[1].length;
+        }
+      }
+      
+      // Insert the addition
+      const textBefore = inputText.value.substring(0, position);
+      const textAfter = inputText.value.substring(position);
+      
+      // Apply the addition
+      inputText.value = textBefore + part[1] + textAfter;
+    }
+    
+    // Show feedback
+    changeApplied.value = true;
+    setTimeout(() => {
+      changeApplied.value = false;
+    }, 2000);
+    
+    // Adjust textarea height
+    nextTick(() => {
+      if (textareaRef.value) {
+        adjustTextareaHeight({ target: textareaRef.value });
+      }
+    });
+  } catch (err) {
+    console.error("Error handling change click:", err);
+    error.value = "Failed to apply change. Please try again.";
+  }
 }
 
 onMounted(() => {
