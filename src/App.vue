@@ -1,89 +1,56 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col">
-    <header class="bg-white shadow-sm px-4 sm:px-8 py-4 border-b border-gray-200 flex-none">
-      <div class="flex justify-between items-center">
-        <h1 class="text-xl sm:text-2xl font-bold mb-4 text-gray-800">FlowPal</h1>
-        <button 
-          @click="showSettings = !showSettings"
-          class="text-gray-600 hover:text-gray-800"
-          title="Settings"
-        >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-        </button>
-      </div>
-      
-      <!-- Settings Modal -->
-      <div 
-        v-if="showSettings"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      >
-        <div class="bg-white p-4 sm:p-6 rounded-lg shadow-lg w-full max-w-md">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg sm:text-xl font-semibold">Settings</h2>
-            <button 
-              @click="showSettings = false"
-              class="text-gray-500 hover:text-gray-700"
-            >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+  <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col text-gray-900 dark:text-white">
+    <header class="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between p-4 sm:p-4">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">FlowPal</h1>
+        <div class="flex items-center space-x-2">
+          <div 
+            v-if="loadingApiKey" 
+            class="mr-2 flex items-center text-sm text-gray-500 dark:text-gray-400"
+          >
+            <span class="mr-2">Loading settings...</span>
+            <div class="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600"></div>
           </div>
-          
-          <div class="mb-4">
-            <label for="api-key" class="block text-sm font-medium text-gray-700 mb-1">
-              OpenAI API Key
-            </label>
-            <input
-              id="api-key"
-              type="password"
-              v-model="openAIKey"
-              placeholder="sk-..."
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-            />
-            <p class="mt-1 text-xs sm:text-sm text-gray-500">
-              Your API key is stored locally in your browser and never sent to our servers.
-            </p>
-          </div>
-          
-          <div class="flex justify-end">
-            <button
-              @click="showSettings = false"
-              class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              Save
-            </button>
-          </div>
+          <button 
+            @click="showSettings = !showSettings"
+            class="flex items-center rounded-md p-2 text-sm transition-colors hover:bg-gray-100 focus:outline-none dark:hover:bg-gray-800"
+            aria-label="Settings"
+          >
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
+          <ThemeSwitcher />
         </div>
       </div>
-      
-      <div class="flex flex-wrap gap-2 sm:gap-4 items-center mb-4">
-        <div class="flex flex-wrap items-center gap-2 sm:gap-4 w-full md:w-auto mb-2 md:mb-0">
-          <label class="flex items-center gap-2 text-gray-600 text-sm">
+    </header>
+    
+    <main class="flex-1 p-4 sm:p-4 flex flex-col min-h-0">
+      <div class="mb-4 flex flex-wrap justify-between items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
             <input 
               type="checkbox" 
               v-model="onlyGrammar"
-              class="rounded text-blue-600 focus:ring-blue-500"
+              class="rounded text-blue-600 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:border-gray-600"
             >
             Only Fix Grammar
           </label>
-          <label class="flex items-center gap-2 text-gray-600 text-sm">
+          <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
             <input 
               type="checkbox" 
               v-model="handleSpanish"
-              class="rounded text-blue-600 focus:ring-blue-500"
+              class="rounded text-blue-600 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:border-gray-600"
             >
             Handle Spanish Text
           </label>
           <div class="flex items-center gap-2">
-            <label for="writing-style" class="text-gray-600 text-sm">Style:</label>
+            <label for="writing-style" class="text-sm text-gray-600 dark:text-gray-300">Style:</label>
             <select
               id="writing-style"
               v-model="writingStyle"
-              class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-xs sm:text-sm w-full min-w-[120px]"
+              class="rounded-md border-gray-300 px-2 py-1 text-xs sm:text-sm min-w-[120px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
               <option 
                 v-for="style in WRITING_STYLES" 
@@ -96,27 +63,29 @@
             </select>
           </div>
         </div>
-        <div class="flex flex-wrap gap-2">
+
+        <div class="flex items-center gap-2">
           <button 
             @click="processText" 
             :disabled="isProcessing"
-            class="px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            class="btn btn-primary flex items-center gap-2"
           >
             <span v-if="isProcessing">Processing...</span>
             <span v-else>Improve Writing</span>
           </button>
           <button 
             @click="clearText" 
-            class="px-3 py-2 sm:px-4 sm:py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-sm"
+            class="btn btn-secondary"
           >
             Clear All
           </button>
         </div>
       </div>
-      <div class="flex items-center gap-2 mb-2">
+
+      <div class="mb-4">
         <button
           @click="showInstructions = !showInstructions"
-          class="text-xs sm:text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1"
+          class="text-xs sm:text-sm text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white flex items-center gap-1"
         >
           <svg 
             class="w-4 h-4 transform transition-transform"
@@ -133,28 +102,26 @@
       </div>
       <div 
         v-if="showInstructions"
-        class="transition-all duration-200"
+        class="mb-4 transition-all duration-200"
       >
         <div class="flex-1">
           <textarea
             v-model="customInstructions"
             placeholder="Add your custom instructions for the AI here..."
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             rows="2"
           ></textarea>
         </div>
       </div>
-    </header>
-    
-    <main class="flex-1 p-4 sm:p-8 flex flex-col min-h-0">
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 flex-1 min-h-0">
-        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 flex flex-col flex-1">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 flex flex-col flex-1">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold text-gray-800">Your Text</h2>
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Your Text</h2>
             <button
               v-if="inputText"
               @click="copyToClipboard(inputText, 'input')"
-              class="px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-sm flex items-center gap-1 sm:gap-2"
+              class="px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 flex items-center gap-1 sm:gap-2"
             >
               {{ inputCopied ? 'Copied!' : 'Copy' }}
             </button>
@@ -163,28 +130,28 @@
             ref="textareaRef"
             v-model="inputText"
             placeholder="Start writing here..."
-            class="w-full p-3 sm:p-4 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-serif text-base sm:text-lg leading-relaxed overflow-hidden resize-none min-h-[150px] flex-grow"
+            class="w-full p-4 border border-gray-200 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-serif text-base sm:text-lg leading-relaxed overflow-hidden resize-none min-h-[150px] flex-grow bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             @input="adjustTextareaHeight($event)"
           ></textarea>
         </div>
         
-        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 flex flex-col min-h-0">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 flex flex-col min-h-0">
           <div class="flex flex-wrap justify-between items-center mb-4 flex-none">
             <div class="flex flex-wrap items-center gap-2 mb-2 sm:mb-0">
-              <h2 class="text-xl font-semibold text-gray-800">Processed Text</h2>
-              <label class="flex items-center gap-2 text-sm text-gray-600">
+              <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Processed Text</h2>
+              <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <input 
                   type="checkbox" 
                   v-model="showDiff"
-                  class="rounded text-blue-600 focus:ring-blue-500"
+                  class="rounded text-blue-600 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:border-gray-600"
                 >
                 Show Changes
               </label>
-              <label class="flex items-center gap-2 text-sm text-gray-600">
+              <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <input 
                   type="checkbox" 
                   v-model="showOnlyAdditions"
-                  class="rounded text-blue-600 focus:ring-blue-500"
+                  class="rounded text-blue-600 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:border-gray-600"
                 >
                 Show Only Additions
               </label>
@@ -193,14 +160,14 @@
               <button
                 v-if="processedText"
                 @click="copyToClipboard(processedText, 'processed')"
-                class="px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 shadow-sm"
+                class="px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
               >
                 {{ processedCopied ? 'Copied!' : 'Copy' }}
               </button>
               <button
                 v-if="processedText"
                 @click="replaceWithProcessed"
-                class="px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-sm flex items-center gap-1 sm:gap-2"
+                class="px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 flex items-center gap-1 sm:gap-2"
               >
                 <svg class="w-3 h-3 sm:w-4 sm:h-4" viewBox="0 0 24 24">
                   <path 
@@ -213,15 +180,15 @@
             </div>
           </div>
           <div 
-            class="flex-1 w-full p-3 sm:p-4 border border-gray-200 rounded-md overflow-y-auto whitespace-pre-wrap font-serif text-base sm:text-lg leading-relaxed min-h-0"
+            class="flex-1 w-full p-4 border border-gray-200 dark:border-gray-600 rounded-md overflow-y-auto whitespace-pre-wrap font-serif text-base sm:text-lg leading-relaxed min-h-0 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
             <template v-if="showDiff && processedText">
               <template v-for="(part, index) in textDiff" :key="index">
                 <span
                   v-if="part[0] === 0 || (showOnlyAdditions && part[0] === 1) || (!showOnlyAdditions && part[0] !== 0)"
                   :class="{
-                    'bg-red-100 line-through': part[0] === -1 && !showOnlyAdditions,
-                    'bg-green-100 hover:bg-green-200 cursor-pointer transition-colors duration-150 border-b border-dashed border-green-400 hover:border-green-500': part[0] === 1,
+                    'bg-red-100 dark:bg-red-900/50 line-through': part[0] === -1 && !showOnlyAdditions,
+                    'bg-green-100 dark:bg-green-900/50 hover:bg-green-200 dark:hover:bg-green-800/70 cursor-pointer transition-colors duration-150 border-b border-dashed border-green-400 dark:border-green-600 hover:border-green-500 dark:hover:border-green-500': part[0] === 1,
                   }"
                   @click="part[0] === 1 ? handleChangeClick(part, index) : null"
                   :title="part[0] === 1 ? 'Click to apply this change' : ''"
@@ -239,7 +206,7 @@
     <!-- Error Toast -->
     <div 
       v-if="error" 
-      class="fixed bottom-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-3 sm:p-4 rounded shadow-lg max-w-[90%] sm:max-w-md z-50 text-sm"
+      class="fixed bottom-4 right-4 bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-100 p-3 sm:p-4 rounded max-w-[90%] sm:max-w-md z-50 text-sm"
       role="alert"
     >
       <div class="flex justify-between items-start">
@@ -249,7 +216,7 @@
         </div>
         <button 
           @click="error = null"
-          class="ml-4 text-red-700 hover:text-red-900"
+          class="ml-4 text-red-700 hover:text-red-900 dark:text-red-200 dark:hover:text-red-100"
         >
           ×
         </button>
@@ -259,7 +226,7 @@
     <!-- Processing indicator -->
     <div 
       v-if="isProcessing" 
-      class="fixed bottom-4 left-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-3 sm:p-4 rounded shadow-lg z-50 text-sm"
+      class="fixed bottom-4 left-4 bg-blue-100 dark:bg-blue-900 border-l-4 border-blue-500 text-blue-700 dark:text-blue-100 p-3 sm:p-4 rounded z-50 text-sm"
     >
       Processing your text...
     </div>
@@ -267,9 +234,56 @@
     <!-- Change applied indicator -->
     <div 
       v-if="changeApplied" 
-      class="fixed bottom-4 left-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-3 sm:p-4 rounded shadow-lg transition-opacity duration-300 z-50 text-sm"
+      class="fixed bottom-4 left-4 bg-green-100 dark:bg-green-900 border-l-4 border-green-500 text-green-700 dark:text-green-100 p-3 sm:p-4 rounded transition-opacity duration-300 z-50 text-sm"
     >
       Change applied!
+    </div>
+
+    <!-- Settings Modal -->
+    <div 
+      v-if="showSettings"
+      class="settings-modal"
+    >
+      <div class="settings-content">
+        <div class="settings-header">
+          <h2 class="text-lg sm:text-xl font-semibold dark:text-white">Settings</h2>
+          <button 
+            @click="showSettings = false"
+            class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div class="settings-body">
+          <div class="form-group">
+            <label for="api-key" class="form-label">
+              OpenAI API Key
+            </label>
+            <input
+              id="api-key"
+              type="password"
+              v-model="openAIKey"
+              placeholder="sk-..."
+              class="form-input"
+            />
+            <p class="mt-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+              Your API key is stored locally in your browser and never sent to our servers.
+            </p>
+          </div>
+          
+          <div class="flex justify-end">
+            <button
+              @click="showSettings = false"
+              class="btn btn-primary"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -279,6 +293,8 @@ import { ref, watch, computed, onMounted, nextTick } from 'vue'
 import { textProcessor } from './services/llm'
 import { mdiArrowLeft } from '@mdi/js'
 import DiffMatchPatch from 'diff-match-patch'
+import ThemeSwitcher from './components/ThemeSwitcher.vue'
+import { getTheme, THEMES } from './services/theme'
 
 const STORAGE_KEYS = {
   INPUT: 'writer-input-text',
@@ -321,6 +337,9 @@ const changeApplied = ref(false)
 const textareaRef = ref(null);
 
 const showOnlyAdditions = ref(localStorage.getItem(STORAGE_KEYS.SHOW_ONLY_ADDITIONS) === 'true')
+
+// Add loadingApiKey state
+const loadingApiKey = ref(false)
 
 // Add openAIKey state
 const openAIKey = ref(localStorage.getItem(STORAGE_KEYS.API_KEY) || '')
@@ -473,6 +492,13 @@ const processText = async () => {
   error.value = null
 
   try {
+    // Check if API key is set
+    if (!openAIKey.value.trim()) {
+      error.value = 'OpenAI API key is not configured. Please enter your API key in the settings.'
+      showSettings.value = true
+      return
+    }
+
     const result = await textProcessor.processor(inputText.value, {
       onlyGrammar: onlyGrammar.value,
       handleSpanish: handleSpanish.value,
@@ -486,7 +512,6 @@ const processText = async () => {
 
     processedText.value = result
   } catch (err) {
-    console.error('Processing error:', err)
     error.value = err.message
   } finally {
     isProcessing.value = false
@@ -518,7 +543,6 @@ const copyToClipboard = async (text, type) => {
       setTimeout(() => processedCopied.value = false, 2000)
     }
   } catch (err) {
-    console.error('Failed to copy text:', err)
     error.value = 'Failed to copy text to clipboard'
   }
 }
@@ -599,7 +623,6 @@ const handleChangeClick = (part, index) => {
       }
     });
   } catch (err) {
-    console.error("Error handling change click:", err);
     error.value = "Failed to apply change. Please try again.";
   }
 }
@@ -608,5 +631,20 @@ onMounted(() => {
   if (textareaRef.value) {
     adjustTextareaHeight({ target: textareaRef.value });
   }
+  
+  // Check if API key is configured
+  loadingApiKey.value = true;
+  setTimeout(() => {
+    // We're using localStorage directly for the API key, so just check if it exists
+    if (!openAIKey.value.trim()) {
+      // For new users, we may want to show settings
+      // showSettings.value = true;
+    }
+    loadingApiKey.value = false;
+  }, 500); // Short delay to avoid flickering
 })
 </script>
+
+<style>
+/* All styles now come from src/style.css */
+</style>

@@ -44,8 +44,6 @@ class LLMProvider {
 
       return response.content
     } catch (error) {
-      console.error('LLM Processing Error:', error)
-      
       // Handle specific error cases
       if (error.message.includes('API key')) {
         throw new Error('Invalid API key. Please check your configuration.')
