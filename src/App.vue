@@ -592,7 +592,7 @@ const handleChangeClick = (part, index) => {
         const currentPart = textDiff.value[i];
         if (!currentPart) continue;
         
-        if (currentPart[0] === 0) { // Only unchanged text contributes to position
+        if (currentPart[0] === 0 || currentPart[0] === -1) { // Both unchanged and deleted text contribute to position
           position += currentPart[1].length;
         }
       }
@@ -613,7 +613,7 @@ const handleChangeClick = (part, index) => {
         const currentPart = textDiff.value[i];
         if (!currentPart) continue;
         
-        if (currentPart[0] === 0) { // Only unchanged text contributes to position
+        if (currentPart[0] === 0 || currentPart[0] === -1) { // Both unchanged and deleted text contribute to position
           position += currentPart[1].length;
         }
       }
