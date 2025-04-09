@@ -97,7 +97,23 @@
               fill="currentColor"
             />
           </svg>
-          Custom Instructions
+          <span class="flex items-center">
+            Custom Instructions
+            <span 
+              v-if="!showInstructions && customInstructions.trim()"
+              :class="[
+                'inline-flex items-center justify-center rounded-full ml-2',
+                customInstructions.length > 20 ? 'px-1 py-0.5 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 'w-1.5 h-1.5 bg-blue-500'
+              ]"
+              :title="customInstructions.length > 100 ? 
+                      'Custom instructions: ' + customInstructions.substring(0, 100) + '...' : 
+                      'Custom instructions: ' + customInstructions"
+            >
+              <template v-if="customInstructions.length > 20">
+                {{ Math.round(customInstructions.length / 10) * 10 }}c
+              </template>
+            </span>
+          </span>
         </button>
       </div>
       <div 
@@ -210,7 +226,7 @@
       role="alert"
     >
       <div class="flex justify-between items-start">
-        <div>
+  <div>
           <p class="font-bold">Error</p>
           <p>{{ error }}</p>
         </div>
