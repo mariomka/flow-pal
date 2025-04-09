@@ -9,4 +9,9 @@ export default defineConfig({
     tailwindcss()
   ],
   base: '/flow-pal/', // Base URL for GitHub Pages deployment
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./vitest.setup.js']
+  }
 })
