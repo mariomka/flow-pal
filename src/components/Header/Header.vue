@@ -27,7 +27,6 @@
 </template>
 
 <script setup>
-import { defineEmits } from 'vue'
 import ThemeSwitcher from '../ThemeSwitcher.vue'
 
 defineProps({
