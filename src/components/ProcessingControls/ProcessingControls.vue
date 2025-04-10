@@ -37,6 +37,24 @@
           </option>
         </select>
       </div>
+      <div class="flex items-center gap-2">
+        <label for="english-region" class="text-sm text-gray-600 dark:text-gray-300">Region:</label>
+        <select
+          id="english-region"
+          v-model="englishRegionValue"
+          @change="updateEnglishRegion"
+          class="rounded-md border-gray-300 px-2 py-1 text-xs sm:text-sm min-w-[120px] bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+        >
+          <option 
+            v-for="region in englishRegions" 
+            :key="region.id" 
+            :value="region.id"
+            :title="region.description"
+          >
+            {{ region.label }}
+          </option>
+        </select>
+      </div>
     </div>
 
     <div class="flex items-center gap-2">
@@ -74,11 +92,19 @@ const props = defineProps({
     type: String,
     default: 'preserve'
   },
+  englishRegion: {
+    type: String,
+    default: 'default'
+  },
   isProcessing: {
     type: Boolean,
     default: false
   },
   writingStyles: {
+    type: Array,
+    required: true
+  },
+  englishRegions: {
     type: Array,
     required: true
   }
@@ -88,6 +114,7 @@ const emit = defineEmits([
   'update:onlyGrammar', 
   'update:handleSpanish', 
   'update:writingStyle',
+  'update:englishRegion',
   'process',
   'clear'
 ])
@@ -95,6 +122,7 @@ const emit = defineEmits([
 const onlyGrammarValue = ref(props.onlyGrammar)
 const handleSpanishValue = ref(props.handleSpanish)
 const writingStyleValue = ref(props.writingStyle)
+const englishRegionValue = ref(props.englishRegion)
 
 // Sync props with internal refs
 watch(() => props.onlyGrammar, (newValue) => {
@@ -109,6 +137,10 @@ watch(() => props.writingStyle, (newValue) => {
   writingStyleValue.value = newValue
 })
 
+watch(() => props.englishRegion, (newValue) => {
+  englishRegionValue.value = newValue
+})
+
 function updateOnlyGrammar() {
   emit('update:onlyGrammar', onlyGrammarValue.value)
 }
@@ -119,6 +151,10 @@ function updateHandleSpanish() {
 
 function updateWritingStyle() {
   emit('update:writingStyle', writingStyleValue.value)
+}
+
+function updateEnglishRegion() {
+  emit('update:englishRegion', englishRegionValue.value)
 }
 
 function processText() {

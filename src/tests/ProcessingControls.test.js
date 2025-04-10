@@ -8,6 +8,11 @@ describe('ProcessingControls Component', () => {
     { id: 'business', label: 'Business', description: 'Professional and clear tone for business communication' }
   ]
   
+  const englishRegions = [
+    { id: 'default', label: 'Default', description: 'Default English without specific regional preferences' },
+    { id: 'us', label: 'US English', description: 'American English spelling and expressions' }
+  ]
+  
   let wrapper
   
   beforeEach(() => {
@@ -16,8 +21,10 @@ describe('ProcessingControls Component', () => {
         onlyGrammar: false,
         handleSpanish: true,
         writingStyle: 'preserve',
+        englishRegion: 'default',
         isProcessing: false,
-        writingStyles
+        writingStyles,
+        englishRegions
       }
     })
   })
@@ -26,15 +33,25 @@ describe('ProcessingControls Component', () => {
     expect(wrapper.text()).toContain('Only Fix Grammar')
     expect(wrapper.text()).toContain('Handle Spanish Text')
     expect(wrapper.text()).toContain('Style:')
+    expect(wrapper.text()).toContain('Region:')
     expect(wrapper.text()).toContain('Improve Writing')
     expect(wrapper.text()).toContain('Clear All')
   })
   
   it('renders writing style options', () => {
-    const options = wrapper.findAll('option')
+    const styleSelect = wrapper.find('#writing-style')
+    const options = styleSelect.findAll('option')
     expect(options.length).toBe(writingStyles.length)
     expect(options[0].text()).toBe(writingStyles[0].label)
     expect(options[1].text()).toBe(writingStyles[1].label)
+  })
+  
+  it('renders English region options', () => {
+    const regionSelect = wrapper.find('#english-region')
+    const options = regionSelect.findAll('option')
+    expect(options.length).toBe(englishRegions.length)
+    expect(options[0].text()).toBe(englishRegions[0].label)
+    expect(options[1].text()).toBe(englishRegions[1].label)
   })
   
   it('displays Processing... when isProcessing is true', async () => {
@@ -57,9 +74,15 @@ describe('ProcessingControls Component', () => {
   })
   
   it('emits update:writingStyle event when style selector is changed', async () => {
-    await wrapper.find('select').setValue('business')
+    await wrapper.find('#writing-style').setValue('business')
     expect(wrapper.emitted('update:writingStyle')).toBeTruthy()
     expect(wrapper.emitted('update:writingStyle')[0]).toEqual(['business'])
+  })
+  
+  it('emits update:englishRegion event when region selector is changed', async () => {
+    await wrapper.find('#english-region').setValue('us')
+    expect(wrapper.emitted('update:englishRegion')).toBeTruthy()
+    expect(wrapper.emitted('update:englishRegion')[0]).toEqual(['us'])
   })
   
   it('emits process event when Improve Writing button is clicked', async () => {

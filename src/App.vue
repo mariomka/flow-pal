@@ -10,8 +10,10 @@
         v-model:only-grammar="onlyGrammar"
         v-model:handle-spanish="handleSpanish"
         v-model:writing-style="writingStyle"
+        v-model:english-region="englishRegion"
         :is-processing="isProcessing"
         :writing-styles="WRITING_STYLES"
+        :english-regions="ENGLISH_REGIONS"
         @process="processText"
         @clear="clearText"
       />
@@ -107,6 +109,7 @@ const STORAGE_KEYS = {
   SHOW_INSTRUCTIONS: 'writer-show-instructions',
   WRITING_STYLE: 'writer-style',
   SHOW_ONLY_ADDITIONS: 'writer-show-only-additions',
+  ENGLISH_REGION: 'writer-english-region',
   API_KEY: 'openai_api_key'
 }
 
@@ -120,6 +123,15 @@ const WRITING_STYLES = [
   { id: 'simple', label: 'Simple', description: 'Clear and easy-to-understand language for general audiences' }
 ]
 
+// English region options
+const ENGLISH_REGIONS = [
+  { id: 'default', label: 'Default', description: 'Default English without specific regional preferences' },
+  { id: 'us', label: 'US English', description: 'American English spelling and expressions' },
+  { id: 'uk', label: 'UK English', description: 'British English spelling and expressions' },
+  { id: 'au', label: 'Australian English', description: 'Australian English spelling and expressions' },
+  { id: 'ca', label: 'Canadian English', description: 'Canadian English spelling and expressions' }
+]
+
 // State
 const inputText = ref(localStorage.getItem(STORAGE_KEYS.INPUT) || '')
 const processedText = ref(localStorage.getItem(STORAGE_KEYS.PROCESSED) || '')
@@ -131,6 +143,7 @@ const isProcessing = ref(false)
 const error = ref(null)
 const showDiff = ref(localStorage.getItem(STORAGE_KEYS.SHOW_DIFF) === 'true')
 const writingStyle = ref(localStorage.getItem(STORAGE_KEYS.WRITING_STYLE) || 'preserve')
+const englishRegion = ref(localStorage.getItem(STORAGE_KEYS.ENGLISH_REGION) || 'default')
 const changeApplied = ref(false)
 const textareaRef = ref(null)
 const showOnlyAdditions = ref(localStorage.getItem(STORAGE_KEYS.SHOW_ONLY_ADDITIONS) === 'true')
@@ -171,6 +184,10 @@ watch(writingStyle, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.WRITING_STYLE, newValue)
 })
 
+watch(englishRegion, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.ENGLISH_REGION, newValue)
+})
+
 watch(showOnlyAdditions, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.SHOW_ONLY_ADDITIONS, newValue);
 })
@@ -201,7 +218,8 @@ const processText = async () => {
       onlyGrammar: onlyGrammar.value,
       handleSpanish: handleSpanish.value,
       customInstructions: customInstructions.value,
-      writingStyle: writingStyle.value
+      writingStyle: writingStyle.value,
+      englishRegion: englishRegion.value
     })
 
     if (!result) {

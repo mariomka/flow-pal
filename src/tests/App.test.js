@@ -110,7 +110,8 @@ describe('App Component', () => {
       onlyGrammar: false,
       handleSpanish: true,
       customInstructions: '',
-      writingStyle: 'preserve'
+      writingStyle: 'preserve',
+      englishRegion: 'default'
     })
     
     expect(wrapper.vm.processedText).toBe('Processed: Test text')

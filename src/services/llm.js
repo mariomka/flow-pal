@@ -64,7 +64,8 @@ export async function improveWriting(text, options = {
   onlyGrammar: false, 
   handleSpanish: true, 
   customInstructions: '',
-  writingStyle: 'preserve'
+  writingStyle: 'preserve',
+  englishRegion: 'default'
 }) {
   const llm = new LLMProvider()
   
@@ -117,6 +118,31 @@ export async function improveWriting(text, options = {
     `
   }
   
+  // Define region-specific instructions
+  const regionInstructions = {
+    default: '',
+    us: `
+      - Use American English spelling (e.g., "color" instead of "colour")
+      - Prefer American English vocabulary and expressions
+      - Follow American English punctuation and grammar conventions
+    `,
+    uk: `
+      - Use British English spelling (e.g., "colour" instead of "color")
+      - Prefer British English vocabulary and expressions
+      - Follow British English punctuation and grammar conventions
+    `,
+    au: `
+      - Use Australian English spelling (mostly following British conventions with some exceptions)
+      - Incorporate Australian English vocabulary and expressions where appropriate
+      - Follow Australian English punctuation and grammar conventions
+    `,
+    ca: `
+      - Use Canadian English spelling (a mix of British and American conventions, e.g., "colour" but "analyze")
+      - Prefer Canadian English vocabulary and expressions
+      - Follow Canadian English punctuation and grammar conventions
+    `
+  }
+  
   let instruction = `You are an expert English language editor with native-level mastery.
     Your task is to ${options.onlyGrammar ? 'fix grammar and spelling errors only' : 'improve the provided text'} while:
 
@@ -127,6 +153,9 @@ export async function improveWriting(text, options = {
     ` : `
     Writing Style Instructions:
     ${styleInstructions[options.writingStyle]}
+    
+    ${options.englishRegion !== 'default' ? `English Region Instructions:
+    ${regionInstructions[options.englishRegion]}` : ''}
     
     General Improvements:
     1. Enhancing clarity and flow while maintaining the intended meaning
@@ -155,7 +184,7 @@ export async function improveWriting(text, options = {
     - Respect the original text's list formats and structural elements
     - If text has multiple paragraphs, maintain the same paragraph breaks
     
-    The goal is to ${options.onlyGrammar ? 'fix grammar while preserving the original writing as much as possible' : `improve the text according to the ${options.writingStyle === 'preserve' ? 'original' : options.writingStyle} style guidelines`} while keeping the exact same formatting.
+    The goal is to ${options.onlyGrammar ? 'fix grammar while preserving the original writing as much as possible' : `improve the text according to the ${options.writingStyle === 'preserve' ? 'original' : options.writingStyle} style guidelines`}${options.englishRegion !== 'default' ? ` using ${options.englishRegion.toUpperCase()} English conventions` : ''} while keeping the exact same formatting.
     Return only the ${options.onlyGrammar ? 'corrected' : 'improved'} text without any explanations or comments.`
   
   return await llm.process(text, instruction)
