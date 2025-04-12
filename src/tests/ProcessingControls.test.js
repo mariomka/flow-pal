@@ -31,7 +31,7 @@ describe('ProcessingControls Component', () => {
   
   it('renders all controls correctly', () => {
     expect(wrapper.text()).toContain('Only Fix Grammar')
-    expect(wrapper.text()).toContain('Auto Mode')
+    expect(wrapper.text()).toContain('Auto Run')
     expect(wrapper.text()).toContain('Style:')
     expect(wrapper.text()).toContain('Region:')
     expect(wrapper.text()).toContain('Improve Writing')
