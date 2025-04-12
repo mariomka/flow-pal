@@ -8,6 +8,7 @@
     <main class="flex-1 p-4 sm:p-4 flex flex-col min-h-0">
       <ProcessingControls
         v-model:only-grammar="onlyGrammar"
+        v-model:auto-mode="autoMode"
         v-model:writing-style="writingStyle"
         v-model:english-region="englishRegion"
         :is-processing="isProcessing"
@@ -108,6 +109,7 @@ const STORAGE_KEYS = {
   WRITING_STYLE: 'writer-style',
   SHOW_ONLY_ADDITIONS: 'writer-show-only-additions',
   ENGLISH_REGION: 'writer-english-region',
+  AUTO_MODE: 'writer-auto-mode',
   API_KEY: 'openai_api_key'
 }
 
@@ -134,6 +136,7 @@ const ENGLISH_REGIONS = [
 const inputText = ref(localStorage.getItem(STORAGE_KEYS.INPUT) || '')
 const processedText = ref(localStorage.getItem(STORAGE_KEYS.PROCESSED) || '')
 const onlyGrammar = ref(localStorage.getItem(STORAGE_KEYS.ONLY_GRAMMAR) === 'true')
+const autoMode = ref(localStorage.getItem(STORAGE_KEYS.AUTO_MODE) === 'true')
 const customInstructions = ref(localStorage.getItem(STORAGE_KEYS.CUSTOM_INSTRUCTIONS) || '')
 const showInstructions = ref(localStorage.getItem(STORAGE_KEYS.SHOW_INSTRUCTIONS) === 'true')
 const isProcessing = ref(false)
@@ -147,6 +150,7 @@ const showOnlyAdditions = ref(localStorage.getItem(STORAGE_KEYS.SHOW_ONLY_ADDITI
 const loadingApiKey = ref(false)
 const openAIKey = ref(localStorage.getItem(STORAGE_KEYS.API_KEY) || '')
 const showSettings = ref(false)
+const autoProcessTimeout = ref(null)
 
 // Watch for changes and save to localStorage
 watch(showDiff, (newValue) => {
@@ -187,6 +191,28 @@ watch(showOnlyAdditions, (newValue) => {
 
 watch(openAIKey, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.API_KEY, newValue)
+})
+
+// Watch for auto mode changes
+watch(autoMode, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.AUTO_MODE, newValue)
+})
+
+// Watch for input text changes and auto-process with debounce
+watch(inputText, (newValue) => {
+  // Only auto-process if auto mode is enabled and there's text to process
+  if (autoMode.value && newValue.trim() && !isProcessing.value) {
+    // Clear any existing timeout
+    if (autoProcessTimeout.value) {
+      clearTimeout(autoProcessTimeout.value)
+    }
+    
+    // Set a new timeout (1 second debounce)
+    autoProcessTimeout.value = setTimeout(() => {
+      processText()
+      autoProcessTimeout.value = null
+    }, 1000)
+  }
 })
 
 // Methods

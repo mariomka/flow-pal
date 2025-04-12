@@ -19,6 +19,7 @@ describe('ProcessingControls Component', () => {
     wrapper = mount(ProcessingControls, {
       props: {
         onlyGrammar: false,
+        autoMode: false,
         writingStyle: 'preserve',
         englishRegion: 'default',
         isProcessing: false,
@@ -30,6 +31,7 @@ describe('ProcessingControls Component', () => {
   
   it('renders all controls correctly', () => {
     expect(wrapper.text()).toContain('Only Fix Grammar')
+    expect(wrapper.text()).toContain('Auto Mode')
     expect(wrapper.text()).toContain('Style:')
     expect(wrapper.text()).toContain('Region:')
     expect(wrapper.text()).toContain('Improve Writing')
@@ -62,6 +64,14 @@ describe('ProcessingControls Component', () => {
     await wrapper.find('input[type="checkbox"]').setValue(true)
     expect(wrapper.emitted('update:onlyGrammar')).toBeTruthy()
     expect(wrapper.emitted('update:onlyGrammar')[0]).toEqual([true])
+  })
+  
+  it('emits update:autoMode event when auto mode checkbox is changed', async () => {
+    const checkboxes = wrapper.findAll('input[type="checkbox"]')
+    // Auto Mode is the second checkbox
+    await checkboxes[1].setValue(true)
+    expect(wrapper.emitted('update:autoMode')).toBeTruthy()
+    expect(wrapper.emitted('update:autoMode')[0]).toEqual([true])
   })
   
   it('emits update:writingStyle event when style selector is changed', async () => {

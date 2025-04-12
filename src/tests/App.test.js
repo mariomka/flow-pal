@@ -15,7 +15,7 @@ vi.mock('../components/ProcessingControls/ProcessingControls.vue', () => ({
   default: {
     name: 'ProcessingControls',
     template: '<div data-testid="processing-controls"><slot /></div>',
-    props: ['onlyGrammar', 'writingStyle', 'englishRegion', 'isProcessing', 'writingStyles', 'englishRegions']
+    props: ['onlyGrammar', 'writingStyle', 'englishRegion', 'isProcessing', 'writingStyles', 'englishRegions', 'autoMode']
   }
 }))
 
@@ -167,5 +167,42 @@ describe('App Component', () => {
     
     expect(wrapper.vm.inputText).toBe('Test text')
     expect(wrapper.vm.processedText).toBe('Processed text')
+  })
+  
+  it('auto-processes text when autoMode is enabled and text changes', async () => {
+    const textProcessor = (await import('../services/llm')).textProcessor
+    
+    // Enable auto mode
+    wrapper.vm.autoMode = true
+    
+    // Mock timer functions
+    vi.useFakeTimers()
+    
+    // Set API key and initial text
+    wrapper.vm.openAIKey = 'test-api-key'
+    wrapper.vm.inputText = 'Test text'
+    
+    // Wait for Vue to process the changes
+    await flushPromises()
+    
+    // Fast-forward timers to trigger debounced auto-processing
+    vi.advanceTimersByTime(1100) // slightly more than 1 second
+    
+    // Restore real timers
+    vi.useRealTimers()
+    
+    // Wait for processing to complete
+    await flushPromises()
+    
+    // Verify the processor was called
+    expect(textProcessor.processor).toHaveBeenCalledWith('Test text', {
+      onlyGrammar: false,
+      customInstructions: '',
+      writingStyle: 'preserve',
+      englishRegion: 'default'
+    })
+    
+    // Verify the processed text is updated
+    expect(wrapper.vm.processedText).toBe('Processed: Test text')
   })
 }) 

@@ -10,6 +10,15 @@
         >
         Only Fix Grammar
       </label>
+      <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+        <input 
+          type="checkbox" 
+          v-model="autoModeValue"
+          @change="updateAutoMode"
+          class="rounded text-blue-600 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:border-gray-600"
+        >
+        Auto Mode
+      </label>
       <div class="flex items-center gap-2">
         <label for="writing-style" class="text-sm text-gray-600 dark:text-gray-300">Style:</label>
         <select
@@ -75,6 +84,10 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  autoMode: {
+    type: Boolean,
+    default: false
+  },
   writingStyle: {
     type: String,
     default: 'preserve'
@@ -98,7 +111,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
-  'update:onlyGrammar', 
+  'update:onlyGrammar',
+  'update:autoMode', 
   'update:writingStyle',
   'update:englishRegion',
   'process',
@@ -106,12 +120,17 @@ const emit = defineEmits([
 ])
 
 const onlyGrammarValue = ref(props.onlyGrammar)
+const autoModeValue = ref(props.autoMode)
 const writingStyleValue = ref(props.writingStyle)
 const englishRegionValue = ref(props.englishRegion)
 
 // Sync props with internal refs
 watch(() => props.onlyGrammar, (newValue) => {
   onlyGrammarValue.value = newValue
+})
+
+watch(() => props.autoMode, (newValue) => {
+  autoModeValue.value = newValue
 })
 
 watch(() => props.writingStyle, (newValue) => {
@@ -124,6 +143,10 @@ watch(() => props.englishRegion, (newValue) => {
 
 function updateOnlyGrammar() {
   emit('update:onlyGrammar', onlyGrammarValue.value)
+}
+
+function updateAutoMode() {
+  emit('update:autoMode', autoModeValue.value)
 }
 
 function updateWritingStyle() {
