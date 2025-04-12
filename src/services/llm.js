@@ -69,6 +69,15 @@ export async function improveWriting(text, options = {
 }) {
   const llm = new LLMProvider()
   
+  // Ensure options are properly initialized with defaults
+  const normalizedOptions = {
+    onlyGrammar: options.onlyGrammar ?? false,
+    handleSpanish: true, // Always true for backward compatibility
+    customInstructions: options.customInstructions ?? '',
+    writingStyle: options.writingStyle ?? 'preserve',
+    englishRegion: options.englishRegion ?? 'default'
+  }
+  
   // Define style-specific instructions
   const styleInstructions = {
     preserve: `
@@ -144,18 +153,18 @@ export async function improveWriting(text, options = {
   }
   
   let instruction = `You are an expert English language editor with native-level mastery.
-    Your task is to ${options.onlyGrammar ? 'fix grammar and spelling errors only' : 'improve the provided text'} while:
+    Your task is to ${normalizedOptions.onlyGrammar ? 'fix grammar and spelling errors only' : 'improve the provided text'} while:
 
-    ${options.onlyGrammar ? `
+    ${normalizedOptions.onlyGrammar ? `
     1. Fixing grammar and spelling errors
     2. Making minimal changes to preserve the original writing style
     3. Not changing word choice or phrasing unless necessary for grammar
     ` : `
     Writing Style Instructions:
-    ${styleInstructions[options.writingStyle]}
+    ${styleInstructions[normalizedOptions.writingStyle]}
     
-    ${options.englishRegion !== 'default' ? `English Region Instructions:
-    ${regionInstructions[options.englishRegion]}` : ''}
+    ${normalizedOptions.englishRegion !== 'default' ? `English Region Instructions:
+    ${regionInstructions[normalizedOptions.englishRegion]}` : ''}
     
     General Improvements:
     1. Enhancing clarity and flow while maintaining the intended meaning
@@ -170,9 +179,9 @@ export async function improveWriting(text, options = {
     - Translate them to natural, contextually appropriate English
     - Ensure the translations flow naturally with the rest of the text
 
-    ${options.customInstructions ? `
+    ${normalizedOptions.customInstructions ? `
     Additional custom instructions:
-    ${options.customInstructions}
+    ${normalizedOptions.customInstructions}
     ` : ''}
 
     IMPORTANT FORMATTING RULES:
@@ -182,8 +191,8 @@ export async function improveWriting(text, options = {
     - Respect the original text's list formats and structural elements
     - If text has multiple paragraphs, maintain the same paragraph breaks
     
-    The goal is to ${options.onlyGrammar ? 'fix grammar while preserving the original writing as much as possible' : `improve the text according to the ${options.writingStyle === 'preserve' ? 'original' : options.writingStyle} style guidelines`}${options.englishRegion !== 'default' ? ` using ${options.englishRegion.toUpperCase()} English conventions` : ''} while keeping the exact same formatting.
-    Return only the ${options.onlyGrammar ? 'corrected' : 'improved'} text without any explanations or comments.`
+    The goal is to ${normalizedOptions.onlyGrammar ? 'fix grammar while preserving the original writing as much as possible' : `improve the text according to the ${normalizedOptions.writingStyle === 'preserve' ? 'original' : normalizedOptions.writingStyle} style guidelines`}${normalizedOptions.englishRegion !== 'default' ? ` using ${normalizedOptions.englishRegion.toUpperCase()} English conventions` : ''} while keeping the exact same formatting.
+    Return only the ${normalizedOptions.onlyGrammar ? 'corrected' : 'improved'} text without any explanations or comments.`
   
   return await llm.process(text, instruction)
 }
@@ -193,4 +202,4 @@ export const textProcessor = {
   name: 'Improve Writing',
   processor: improveWriting,
   description: 'Enhances text to sound more natural and native-like while maintaining meaning'
-} 
+}
