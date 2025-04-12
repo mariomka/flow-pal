@@ -10,15 +10,6 @@
         >
         Only Fix Grammar
       </label>
-      <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-        <input 
-          type="checkbox" 
-          v-model="handleSpanishValue"
-          @change="updateHandleSpanish"
-          class="rounded text-blue-600 focus:ring-blue-500 bg-white dark:bg-gray-700 dark:border-gray-600"
-        >
-        Handle Spanish Text
-      </label>
       <div class="flex items-center gap-2">
         <label for="writing-style" class="text-sm text-gray-600 dark:text-gray-300">Style:</label>
         <select

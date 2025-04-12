@@ -62,7 +62,7 @@ class LLMProvider {
 
 export async function improveWriting(text, options = { 
   onlyGrammar: false, 
-  handleSpanish: true, 
+  handleSpanish: true, // Kept for backward compatibility but will always be treated as true
   customInstructions: '',
   writingStyle: 'preserve',
   englishRegion: 'default'
@@ -165,12 +165,10 @@ export async function improveWriting(text, options = {
     5. Fixing any grammar or spelling errors
     `}
 
-    ${options.handleSpanish ? `
-    Additional Spanish handling:
-    - Identify any Spanish words or phrases in the text
+    Foreign Language Handling:
+    - Identify any non-English words, phrases, or sentences in the text
     - Translate them to natural, contextually appropriate English
     - Ensure the translations flow naturally with the rest of the text
-    ` : ''}
 
     ${options.customInstructions ? `
     Additional custom instructions:

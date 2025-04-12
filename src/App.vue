@@ -8,7 +8,6 @@
     <main class="flex-1 p-4 sm:p-4 flex flex-col min-h-0">
       <ProcessingControls
         v-model:only-grammar="onlyGrammar"
-        v-model:handle-spanish="handleSpanish"
         v-model:writing-style="writingStyle"
         v-model:english-region="englishRegion"
         :is-processing="isProcessing"
@@ -136,7 +135,6 @@ const ENGLISH_REGIONS = [
 const inputText = ref(localStorage.getItem(STORAGE_KEYS.INPUT) || '')
 const processedText = ref(localStorage.getItem(STORAGE_KEYS.PROCESSED) || '')
 const onlyGrammar = ref(localStorage.getItem(STORAGE_KEYS.ONLY_GRAMMAR) === 'true')
-const handleSpanish = ref(localStorage.getItem(STORAGE_KEYS.HANDLE_SPANISH) !== 'false') // Default to true
 const customInstructions = ref(localStorage.getItem(STORAGE_KEYS.CUSTOM_INSTRUCTIONS) || '')
 const showInstructions = ref(localStorage.getItem(STORAGE_KEYS.SHOW_INSTRUCTIONS) === 'true')
 const isProcessing = ref(false)
@@ -170,10 +168,6 @@ watch(processedText, (newValue) => {
 
 watch(onlyGrammar, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.ONLY_GRAMMAR, newValue)
-})
-
-watch(handleSpanish, (newValue) => {
-  localStorage.setItem(STORAGE_KEYS.HANDLE_SPANISH, newValue)
 })
 
 watch(customInstructions, (newValue) => {
@@ -216,7 +210,7 @@ const processText = async () => {
 
     const result = await textProcessor.processor(inputText.value, {
       onlyGrammar: onlyGrammar.value,
-      handleSpanish: handleSpanish.value,
+      handleSpanish: true,
       customInstructions: customInstructions.value,
       writingStyle: writingStyle.value,
       englishRegion: englishRegion.value

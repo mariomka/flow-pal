@@ -15,7 +15,7 @@ vi.mock('../components/ProcessingControls/ProcessingControls.vue', () => ({
   default: {
     name: 'ProcessingControls',
     template: '<div data-testid="processing-controls"><slot /></div>',
-    props: ['onlyGrammar', 'handleSpanish', 'writingStyle', 'isProcessing', 'writingStyles']
+    props: ['onlyGrammar', 'writingStyle', 'englishRegion', 'isProcessing', 'writingStyles', 'englishRegions']
   }
 }))
 

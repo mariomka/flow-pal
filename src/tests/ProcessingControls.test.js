@@ -19,7 +19,6 @@ describe('ProcessingControls Component', () => {
     wrapper = mount(ProcessingControls, {
       props: {
         onlyGrammar: false,
-        handleSpanish: true,
         writingStyle: 'preserve',
         englishRegion: 'default',
         isProcessing: false,
@@ -31,7 +30,6 @@ describe('ProcessingControls Component', () => {
   
   it('renders all controls correctly', () => {
     expect(wrapper.text()).toContain('Only Fix Grammar')
-    expect(wrapper.text()).toContain('Handle Spanish Text')
     expect(wrapper.text()).toContain('Style:')
     expect(wrapper.text()).toContain('Region:')
     expect(wrapper.text()).toContain('Improve Writing')
@@ -64,13 +62,6 @@ describe('ProcessingControls Component', () => {
     await wrapper.find('input[type="checkbox"]').setValue(true)
     expect(wrapper.emitted('update:onlyGrammar')).toBeTruthy()
     expect(wrapper.emitted('update:onlyGrammar')[0]).toEqual([true])
-  })
-  
-  it('emits update:handleSpanish event when Spanish checkbox is changed', async () => {
-    const checkboxes = wrapper.findAll('input[type="checkbox"]')
-    await checkboxes[1].setValue(false)
-    expect(wrapper.emitted('update:handleSpanish')).toBeTruthy()
-    expect(wrapper.emitted('update:handleSpanish')[0]).toEqual([false])
   })
   
   it('emits update:writingStyle event when style selector is changed', async () => {
