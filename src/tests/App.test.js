@@ -108,7 +108,6 @@ describe('App Component', () => {
     
     expect(textProcessor.processor).toHaveBeenCalledWith('Test text', {
       onlyGrammar: false,
-      handleSpanish: true,
       customInstructions: '',
       writingStyle: 'preserve',
       englishRegion: 'default'

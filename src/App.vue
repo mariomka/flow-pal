@@ -102,7 +102,6 @@ const STORAGE_KEYS = {
   INPUT: 'writer-input-text',
   PROCESSED: 'writer-processed-text',
   ONLY_GRAMMAR: 'writer-only-grammar',
-  HANDLE_SPANISH: 'writer-handle-spanish',
   SHOW_DIFF: 'writer-show-diff',
   CUSTOM_INSTRUCTIONS: 'writer-custom-instructions',
   SHOW_INSTRUCTIONS: 'writer-show-instructions',
@@ -210,7 +209,6 @@ const processText = async () => {
 
     const result = await textProcessor.processor(inputText.value, {
       onlyGrammar: onlyGrammar.value,
-      handleSpanish: true,
       customInstructions: customInstructions.value,
       writingStyle: writingStyle.value,
       englishRegion: englishRegion.value

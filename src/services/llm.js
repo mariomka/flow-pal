@@ -62,7 +62,6 @@ class LLMProvider {
 
 export async function improveWriting(text, options = { 
   onlyGrammar: false, 
-  handleSpanish: true, // Kept for backward compatibility but will always be treated as true
   customInstructions: '',
   writingStyle: 'preserve',
   englishRegion: 'default'
@@ -72,7 +71,6 @@ export async function improveWriting(text, options = {
   // Ensure options are properly initialized with defaults
   const normalizedOptions = {
     onlyGrammar: options.onlyGrammar ?? false,
-    handleSpanish: true, // Always true for backward compatibility
     customInstructions: options.customInstructions ?? '',
     writingStyle: options.writingStyle ?? 'preserve',
     englishRegion: options.englishRegion ?? 'default'
