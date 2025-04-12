@@ -75,10 +75,6 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  handleSpanish: {
-    type: Boolean,
-    default: true
-  },
   writingStyle: {
     type: String,
     default: 'preserve'
@@ -103,7 +99,6 @@ const props = defineProps({
 
 const emit = defineEmits([
   'update:onlyGrammar', 
-  'update:handleSpanish', 
   'update:writingStyle',
   'update:englishRegion',
   'process',
@@ -111,17 +106,12 @@ const emit = defineEmits([
 ])
 
 const onlyGrammarValue = ref(props.onlyGrammar)
-const handleSpanishValue = ref(props.handleSpanish)
 const writingStyleValue = ref(props.writingStyle)
 const englishRegionValue = ref(props.englishRegion)
 
 // Sync props with internal refs
 watch(() => props.onlyGrammar, (newValue) => {
   onlyGrammarValue.value = newValue
-})
-
-watch(() => props.handleSpanish, (newValue) => {
-  handleSpanishValue.value = newValue
 })
 
 watch(() => props.writingStyle, (newValue) => {
@@ -134,10 +124,6 @@ watch(() => props.englishRegion, (newValue) => {
 
 function updateOnlyGrammar() {
   emit('update:onlyGrammar', onlyGrammarValue.value)
-}
-
-function updateHandleSpanish() {
-  emit('update:handleSpanish', handleSpanishValue.value)
 }
 
 function updateWritingStyle() {
