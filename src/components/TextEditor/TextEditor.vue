@@ -7,8 +7,17 @@
       @mouseup="handleMouseSelection"
       placeholder="Start writing..."
       :class="[
-        'w-full h-full resize-none bg-transparent px-4 py-4 text-lg text-gray-800 focus:outline-none dark:text-gray-200 mx-auto font-serif',
-        { 'select-none pointer-events-none': floatingMenuVisible && showProcessedResult }
+        'w-full h-full resize-none bg-transparent px-4 py-4 text-gray-800 focus:outline-none dark:text-gray-200 mx-auto',
+        { 'select-none pointer-events-none': floatingMenuVisible && showProcessedResult },
+        { 'font-serif': fontFamily === 'serif' },
+        { 'font-sans': fontFamily === 'sans' },
+        { 'font-mono': fontFamily === 'mono' },
+        { 'text-sm': fontSize === 'small' },
+        { 'text-lg': fontSize === 'medium' },
+        { 'text-xl': fontSize === 'large' },
+        { 'leading-tight': lineHeight === 'dense' },
+        { 'leading-normal': lineHeight === 'normal' },
+        { 'leading-relaxed': lineHeight === 'relaxed' }
       ]"
       :style="{
         paddingLeft: `max(1rem, calc(50% - ${maxWidth / 2}px))`,
@@ -154,6 +163,18 @@ const props = defineProps({
   customInstructions: {
     type: String,
     default: ''
+  },
+  fontFamily: {
+    type: String,
+    default: 'serif'
+  },
+  fontSize: {
+    type: String,
+    default: 'medium'
+  },
+  lineHeight: {
+    type: String,
+    default: 'normal'
   }
 })
 

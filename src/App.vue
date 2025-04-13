@@ -14,6 +14,9 @@
         :writing-style="writingStyle"
         :english-region="englishRegion"
         :custom-instructions="customInstructions"
+        :font-family="fontFamily"
+        :font-size="fontSize"
+        :line-height="lineHeight"
         ref="textareaRef"
         class="flex-1"
       />
@@ -62,10 +65,19 @@
       :custom-instructions="customInstructions"
       :writing-styles="WRITING_STYLES"
       :english-regions="ENGLISH_REGIONS"
+      :font-family="fontFamily"
+      :font-size="fontSize"
+      :line-height="lineHeight"
+      :font-families="FONT_FAMILIES"
+      :font-sizes="FONT_SIZES"
+      :line-heights="LINE_HEIGHTS"
       @update:api-key="openAIKey = $event"
       @update:writing-style="writingStyle = $event"
       @update:english-region="englishRegion = $event"
       @update:custom-instructions="customInstructions = $event"
+      @update:font-family="fontFamily = $event"
+      @update:font-size="fontSize = $event"
+      @update:line-height="lineHeight = $event"
       @close="showSettings = false"
     />
   </div>
@@ -85,7 +97,10 @@ const STORAGE_KEYS = {
   WRITING_STYLE: 'writer-style',
   ENGLISH_REGION: 'writer-english-region',
   CUSTOM_INSTRUCTIONS: 'writer-custom-instructions',
-  API_KEY: 'openai_api_key'
+  API_KEY: 'openai_api_key',
+  FONT_FAMILY: 'writer-font-family',
+  FONT_SIZE: 'writer-font-size',
+  LINE_HEIGHT: 'writer-line-height'
 }
 
 // Writing styles
@@ -107,6 +122,25 @@ const ENGLISH_REGIONS = [
   { id: 'ca', label: 'Canadian English', description: 'Canadian English spelling and expressions' }
 ]
 
+// Font settings
+const FONT_FAMILIES = [
+  { id: 'serif', label: 'Serif', description: 'Traditional serif font for easier reading of long texts' },
+  { id: 'sans', label: 'Sans-serif', description: 'Clean sans-serif font for modern look' },
+  { id: 'mono', label: 'Monospace', description: 'Fixed-width font, good for code and technical content' }
+]
+
+const FONT_SIZES = [
+  { id: 'small', label: 'Small', description: 'Smaller text size for compact viewing' },
+  { id: 'medium', label: 'Medium', description: 'Standard comfortable reading size' },
+  { id: 'large', label: 'Large', description: 'Larger text size for improved readability' }
+]
+
+const LINE_HEIGHTS = [
+  { id: 'dense', label: 'Dense', description: 'Compact line spacing' },
+  { id: 'normal', label: 'Normal', description: 'Standard line spacing for comfortable reading' },
+  { id: 'relaxed', label: 'Relaxed', description: 'More spacious line spacing for easier reading' }
+]
+
 // State
 const inputText = ref(localStorage.getItem(STORAGE_KEYS.INPUT) || '')
 const onlyGrammar = ref(localStorage.getItem(STORAGE_KEYS.ONLY_GRAMMAR) === 'true')
@@ -114,6 +148,9 @@ const error = ref(null)
 const writingStyle = ref(localStorage.getItem(STORAGE_KEYS.WRITING_STYLE) || 'preserve')
 const englishRegion = ref(localStorage.getItem(STORAGE_KEYS.ENGLISH_REGION) || 'default')
 const customInstructions = ref(localStorage.getItem(STORAGE_KEYS.CUSTOM_INSTRUCTIONS) || '')
+const fontFamily = ref(localStorage.getItem(STORAGE_KEYS.FONT_FAMILY) || 'serif')
+const fontSize = ref(localStorage.getItem(STORAGE_KEYS.FONT_SIZE) || 'medium')
+const lineHeight = ref(localStorage.getItem(STORAGE_KEYS.LINE_HEIGHT) || 'normal')
 const textareaRef = ref(null)
 const openAIKey = ref(localStorage.getItem(STORAGE_KEYS.API_KEY) || '')
 const showSettings = ref(false)
@@ -154,6 +191,18 @@ watch(customInstructions, (newValue) => {
 
 watch(openAIKey, (newValue) => {
   localStorage.setItem(STORAGE_KEYS.API_KEY, newValue)
+})
+
+watch(fontFamily, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.FONT_FAMILY, newValue)
+})
+
+watch(fontSize, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.FONT_SIZE, newValue)
+})
+
+watch(lineHeight, (newValue) => {
+  localStorage.setItem(STORAGE_KEYS.LINE_HEIGHT, newValue)
 })
 
 onMounted(() => {

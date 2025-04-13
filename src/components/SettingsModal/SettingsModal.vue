@@ -121,6 +121,77 @@
               </p>
             </div>
           </div>
+
+          <!-- Font Settings -->
+          <div class="mb-4">
+            <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Font Settings</h3>
+            
+            <div class="mb-3">
+              <label class="text-xs font-medium text-gray-900 dark:text-white block mb-1" for="modal-font-family">
+                Font Family
+              </label>
+              <select
+                id="modal-font-family"
+                v-model="fontFamilyValue"
+                class="w-full rounded-md border border-gray-300 px-2 py-1.5 pr-8 text-xs bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white"
+              >
+                <option 
+                  v-for="font in fontFamilies" 
+                  :key="font.id" 
+                  :value="font.id"
+                >
+                  {{ font.label }}
+                </option>
+              </select>
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                {{ getFontFamilyDescription() }}
+              </p>
+            </div>
+
+            <div class="mb-3">
+              <label class="text-xs font-medium text-gray-900 dark:text-white block mb-1" for="modal-font-size">
+                Font Size
+              </label>
+              <select
+                id="modal-font-size"
+                v-model="fontSizeValue"
+                class="w-full rounded-md border border-gray-300 px-2 py-1.5 pr-8 text-xs bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white"
+              >
+                <option 
+                  v-for="size in fontSizes" 
+                  :key="size.id" 
+                  :value="size.id"
+                >
+                  {{ size.label }}
+                </option>
+              </select>
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                {{ getFontSizeDescription() }}
+              </p>
+            </div>
+
+            <div class="mb-3">
+              <label class="text-xs font-medium text-gray-900 dark:text-white block mb-1" for="modal-line-height">
+                Line Height
+              </label>
+              <select
+                id="modal-line-height"
+                v-model="lineHeightValue"
+                class="w-full rounded-md border border-gray-300 px-2 py-1.5 pr-8 text-xs bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white"
+              >
+                <option 
+                  v-for="height in lineHeights" 
+                  :key="height.id" 
+                  :value="height.id"
+                >
+                  {{ height.label }}
+                </option>
+              </select>
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                {{ getLineHeightDescription() }}
+              </p>
+            </div>
+          </div>
         </div>
         
         <!-- Footer -->
@@ -167,6 +238,18 @@ const props = defineProps({
     type: String,
     default: ''
   },
+  fontFamily: {
+    type: String,
+    default: 'serif'
+  },
+  fontSize: {
+    type: String,
+    default: 'medium'
+  },
+  lineHeight: {
+    type: String,
+    default: 'normal'
+  },
   writingStyles: {
     type: Array,
     default: () => [
@@ -187,6 +270,30 @@ const props = defineProps({
       { id: 'au', label: 'Australian English', description: 'Australian English spelling and expressions' },
       { id: 'ca', label: 'Canadian English', description: 'Canadian English spelling and expressions' }
     ]
+  },
+  fontFamilies: {
+    type: Array,
+    default: () => [
+      { id: 'serif', label: 'Serif', description: 'Traditional serif font for easier reading of long texts' },
+      { id: 'sans', label: 'Sans-serif', description: 'Clean sans-serif font for modern look' },
+      { id: 'mono', label: 'Monospace', description: 'Fixed-width font, good for code and technical content' }
+    ]
+  },
+  fontSizes: {
+    type: Array,
+    default: () => [
+      { id: 'small', label: 'Small', description: 'Smaller text size for compact viewing' },
+      { id: 'medium', label: 'Medium', description: 'Standard comfortable reading size' },
+      { id: 'large', label: 'Large', description: 'Larger text size for improved readability' }
+    ]
+  },
+  lineHeights: {
+    type: Array,
+    default: () => [
+      { id: 'dense', label: 'Dense', description: 'Compact line spacing' },
+      { id: 'normal', label: 'Normal', description: 'Standard line spacing for comfortable reading' },
+      { id: 'relaxed', label: 'Relaxed', description: 'More spacious line spacing for easier reading' }
+    ]
   }
 })
 
@@ -195,6 +302,9 @@ const emit = defineEmits([
   'update:writing-style',
   'update:english-region',
   'update:custom-instructions',
+  'update:font-family',
+  'update:font-size',
+  'update:line-height',
   'close'
 ])
 
@@ -203,6 +313,9 @@ const apiKeyValue = ref(props.initialApiKey)
 const writingStyleValue = ref(props.writingStyle)
 const englishRegionValue = ref(props.englishRegion)
 const customInstructionsValue = ref(props.customInstructions)
+const fontFamilyValue = ref(props.fontFamily)
+const fontSizeValue = ref(props.fontSize)
+const lineHeightValue = ref(props.lineHeight)
 
 watch(() => props.initialApiKey, (newValue) => {
   apiKeyValue.value = newValue
@@ -220,6 +333,18 @@ watch(() => props.customInstructions, (newValue) => {
   customInstructionsValue.value = newValue
 })
 
+watch(() => props.fontFamily, (newValue) => {
+  fontFamilyValue.value = newValue
+})
+
+watch(() => props.fontSize, (newValue) => {
+  fontSizeValue.value = newValue
+})
+
+watch(() => props.lineHeight, (newValue) => {
+  lineHeightValue.value = newValue
+})
+
 function closeModal() {
   emit('close')
 }
@@ -229,6 +354,9 @@ function saveSettings() {
   emit('update:writing-style', writingStyleValue.value)
   emit('update:english-region', englishRegionValue.value)
   emit('update:custom-instructions', customInstructionsValue.value)
+  emit('update:font-family', fontFamilyValue.value)
+  emit('update:font-size', fontSizeValue.value)
+  emit('update:line-height', lineHeightValue.value)
   closeModal()
 }
 
@@ -240,6 +368,21 @@ function getStyleDescription() {
 function getRegionDescription() {
   const region = props.englishRegions.find(r => r.id === englishRegionValue.value)
   return region ? region.description : ''
+}
+
+function getFontFamilyDescription() {
+  const font = props.fontFamilies.find(f => f.id === fontFamilyValue.value)
+  return font ? font.description : ''
+}
+
+function getFontSizeDescription() {
+  const size = props.fontSizes.find(s => s.id === fontSizeValue.value)
+  return size ? size.description : ''
+}
+
+function getLineHeightDescription() {
+  const height = props.lineHeights.find(h => h.id === lineHeightValue.value)
+  return height ? height.description : ''
 }
 
 onMounted(() => {
