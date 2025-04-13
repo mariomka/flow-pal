@@ -194,6 +194,7 @@ const selectionRange = ref(null)
 const selectionChangeHandler = ref(null)
 const menuActive = ref(false)  // Track if the menu is intentionally active
 const showDiffView = ref(false) // Toggle for diff view
+const isMouseSelecting = ref(false); // Flag to track mouse selection
 
 // Watch for prop changes
 watch(() => props.text, (newValue) => {
@@ -205,8 +206,11 @@ const handleInput = (event) => {
   emit('update:text', event.target.value)
 }
 
-// Handle text selection
+// Handle text selection (debounced via selectionchange listener)
 const handleSelection = () => {
+  // Prevent running immediately after mouse selection
+  if (isMouseSelecting.value) return;
+
   // If the floating menu is already open with results, ignore new selections
   if (floatingMenuVisible.value && showProcessedResult.value) {
     // If we have a stored selection, try to restore it to prevent unwanted changes
@@ -222,35 +226,68 @@ const handleSelection = () => {
   
   // Only process selections if they're in the textarea
   if (!textareaElement.value || document.activeElement !== textareaElement.value) {
-    return
+    // If focus is lost, potentially hide the menu
+    if (floatingMenuVisible.value && !showProcessedResult.value && !menuActive.value) {
+       // Check if the new active element is outside the menu too
+       if (!document.activeElement?.closest('.floating-menu')) {
+         resetProcessing();
+       }
+    }
+    return;
   }
   
   const selection = window.getSelection()
+  const start = textareaElement.value.selectionStart;
+  const end = textareaElement.value.selectionEnd;
   
-  if (selection && selection.toString().trim() && selection.rangeCount) {
+  if (start !== end && selection && selection.toString().trim()) {
     // Get the selected text
-    selectedText.value = selection.toString().trim()
+    const selectedStr = textareaElement.value.value.substring(start, end).trim();
     
-    // Store selection range for later use
-    if (textareaElement.value) {
-      selectionRange.value = {
-        start: textareaElement.value.selectionStart,
-        end: textareaElement.value.selectionEnd
+    if (selectedStr.length > 0) {
+      // Store selection range and text
+      selectedText.value = selectedStr;
+      selectionRange.value = { start, end };
+
+      // Calculate position using caret coordinates (for keyboard/touch)
+      const textareaRect = textareaElement.value.getBoundingClientRect();
+      const caretPos = getCaretCoordinates(textareaElement.value, end);
+      
+      floatingMenuPosition.value = {
+        // Position near the end of the selection, relative to viewport
+        top: textareaRect.top + caretPos.top - textareaElement.value.scrollTop + window.scrollY, 
+        left: textareaRect.left + caretPos.left + window.scrollX
+      };
+      
+      // Show the menu if not already showing results
+      if (!showProcessedResult.value) {
+        floatingMenuVisible.value = true;
+      }
+    } else {
+      // Selection exists but is empty/whitespace, treat as no selection
+      if (floatingMenuVisible.value && !showProcessedResult.value && !menuActive.value) {
+        resetProcessing();
       }
     }
   } else {
-    // Only hide if we're not showing processed results and not clicking in the menu
-    if (!showProcessedResult.value && 
-        !document.activeElement?.closest('.floating-menu')) {
-      floatingMenuVisible.value = false
+    // No selection or selection cleared
+    if (floatingMenuVisible.value && !showProcessedResult.value && !menuActive.value) {
+       // Only hide if we are not interacting with the menu
+       if (!document.activeElement?.closest('.floating-menu')) {
+          resetProcessing();
+       }
     }
   }
 }
 
 // Handle mouse selection - this is our primary method for showing the menu now
 const handleMouseSelection = (event) => {
+  // Set flag to indicate mouse is being used
+  isMouseSelecting.value = true;
+
   // If the floating menu is already open with results, don't allow new selections
   if (floatingMenuVisible.value && showProcessedResult.value) {
+    isMouseSelecting.value = false; // Reset flag if we exit early
     return
   }
   
@@ -270,7 +307,7 @@ const handleMouseSelection = (event) => {
           selectedText.value = selectedStr
           selectionRange.value = { start, end }
           
-          // Position menu at mouse position
+          // Position menu at mouse position (relative to viewport)
           floatingMenuPosition.value = {
             top: event.clientY + window.scrollY,
             left: event.clientX + window.scrollX
@@ -281,12 +318,57 @@ const handleMouseSelection = (event) => {
         }
       } else if (!showProcessedResult.value && !menuActive.value) {
         // No selection, close the menu if it's open and not showing results
-        // BUT, don't close if we're showing results or menu is active
         resetProcessing()
       }
     }
+    // Reset the flag slightly after the operation completes
+    setTimeout(() => { isMouseSelecting.value = false; }, 50); 
   }, 10) // Short timeout to ensure selection is set
 }
+
+// Helper function to calculate caret coordinates
+const getCaretCoordinates = (element, position) => {
+  // Create a temporary mirror div
+  const mirror = document.createElement('div');
+  // Copy styles from the textarea
+  const style = window.getComputedStyle(element);
+  
+  // Set the mirror's styling to match the textarea
+  mirror.style.width = style.width;
+  mirror.style.height = 'auto';
+  mirror.style.position = 'absolute';
+  mirror.style.whiteSpace = 'pre-wrap';
+  mirror.style.wordWrap = 'break-word';
+  mirror.style.visibility = 'hidden';
+  mirror.style.overflowWrap = 'break-word';
+  mirror.style.padding = style.padding;
+  mirror.style.borderWidth = style.borderWidth;
+  mirror.style.fontSize = style.fontSize;
+  mirror.style.fontFamily = style.fontFamily;
+  mirror.style.lineHeight = style.lineHeight;
+  
+  // Get text up to the caret position
+  const textBeforeCaret = element.value.substring(0, position);
+  
+  // Create a span for the caret
+  mirror.textContent = textBeforeCaret;
+  const span = document.createElement('span');
+  span.textContent = '|';
+  mirror.appendChild(span);
+  
+  document.body.appendChild(mirror);
+  
+  // Get position of the caret span
+  const coordinates = {
+    top: span.offsetTop + parseInt(style.fontSize),
+    left: span.offsetLeft
+  };
+  
+  // Clean up
+  document.body.removeChild(mirror);
+  
+  return coordinates;
+};
 
 // Process selected text
 const processSelectedText = async () => {
@@ -515,14 +597,11 @@ function escapeHtml(text) {
 // Setup the text editor and event listeners
 onMounted(() => {
   if (textareaElement.value) {
-    // Create debounced handler for selection changes
-    selectionChangeHandler.value = debounce(handleSelection, 200)
+    // Ensure handleSelection is debounced for selectionchange
+    selectionChangeHandler.value = debounce(handleSelection, 250); // Increased debounce slightly
     
-    // Listen for selection changes in the document
-    document.addEventListener('selectionchange', selectionChangeHandler.value)
-    
-    // Listen for clicks outside to close the floating menu
-    document.addEventListener('click', handleClickOutside)
+    document.addEventListener('selectionchange', selectionChangeHandler.value);
+    document.addEventListener('click', handleClickOutside);
   }
 })
 
