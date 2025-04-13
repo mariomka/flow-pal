@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
-import ProcessedText from '../components/ProcessedText/ProcessedText.vue'
+import ProcessedText from './ProcessedText.vue'
 
 // Mock dependencies
 vi.mock('@mdi/js', () => ({

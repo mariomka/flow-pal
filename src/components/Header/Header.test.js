@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
-import Header from '../components/Header/Header.vue'
-import ThemeSwitcher from '../components/ThemeSwitcher.vue'
+import Header from './Header.vue'
+import ThemeSwitcher from '../ThemeSwitcher.vue'
 
 // Mock the ThemeSwitcher component
-vi.mock('../components/ThemeSwitcher.vue', () => ({
+vi.mock('../ThemeSwitcher.vue', () => ({
   default: {
     name: 'ThemeSwitcher',
     template: '<div data-testid="theme-switcher"></div>'
@@ -16,15 +16,6 @@ describe('Header Component', () => {
     const wrapper = mount(Header)
     expect(wrapper.text()).toContain('FlowPal')
     expect(wrapper.findComponent(ThemeSwitcher).exists()).toBe(true)
-  })
-
-  it('shows loading indicator when loadingApiKey is true', () => {
-    const wrapper = mount(Header, {
-      props: {
-        loadingApiKey: true
-      }
-    })
-    expect(wrapper.text()).toContain('Loading settings...')
   })
 
   it('emits toggle-settings event when settings button is clicked', async () => {

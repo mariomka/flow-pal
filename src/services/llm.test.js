@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { improveWriting, textProcessor } from '../services/llm'
+import { improveWriting, textProcessor } from './llm'
 import { ChatOpenAI } from '@langchain/openai'
 
 // Mock ChatOpenAI implementation
