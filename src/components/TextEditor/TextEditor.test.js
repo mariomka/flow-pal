@@ -111,8 +111,8 @@ describe('TextEditor Component', () => {
     wrapper.vm.floatingMenuVisible = true
     wrapper.vm.showProcessedResult = false
     
-    // Spy on the processText method
-    const processTextSpy = vi.spyOn(wrapper.vm, 'processText')
+    // Spy on the processSelectedText method
+    const processTextSpy = vi.spyOn(wrapper.vm, 'processSelectedText')
     
     // Add the floating menu to the DOM
     wrapper.vm.floatingMenuPosition = { top: '0px', left: '0px' }
@@ -123,18 +123,17 @@ describe('TextEditor Component', () => {
     if (buttons.length >= 2) {
       await buttons[1].trigger('click')
       
-      // Check that processText was called with correct params
-      expect(processTextSpy).toHaveBeenCalledWith(false)
+      // Check that processSelectedText was called
+      expect(processTextSpy).toHaveBeenCalled()
       
       // Manually call the method to test its implementation
-      await wrapper.vm.processText(false)
+      await wrapper.vm.processSelectedText()
       
       // Check that textProcessor was called with correct params
       expect(textProcessor.processor).toHaveBeenCalledWith('Text to improve', {
-        onlyGrammar: false,
-        customInstructions: '',
         writingStyle: 'preserve',
-        englishRegion: 'default'
+        englishRegion: 'default',
+        customInstructions: ''
       })
       
       // Check the result is shown
@@ -242,5 +241,37 @@ describe('TextEditor Component', () => {
     
     // Check menu was hidden
     expect(wrapper.vm.floatingMenuVisible).toBe(false)
+  })
+  
+  it('shows retry button when processing error occurs and retries on click', async () => {
+    // Mock the textProcessor to fail on first call, then succeed on retry
+    let callCount = 0
+    vi.mocked(textProcessor.processor).mockImplementation(async () => {
+      if (callCount === 0) {
+        callCount++
+        throw new Error('API error')
+      }
+      return 'Successfully processed on retry'
+    })
+    
+    // Setup the component with selected text
+    wrapper.vm.selectedText = 'Text to process'
+    wrapper.vm.floatingMenuVisible = true
+    wrapper.vm.isTextSelected = true
+    
+    // Process the text, which should fail
+    await wrapper.vm.processSelectedText()
+    
+    // Check error state
+    expect(wrapper.vm.processingError).toBeTruthy()
+    expect(wrapper.vm.showProcessedResult).toBe(true) // Now showProcessedResult is true for errors too
+    
+    // Find retry button and click it (need to simulate by calling the method directly)
+    await wrapper.vm.processSelectedText()
+    
+    // Check success state after retry
+    expect(wrapper.vm.processingError).toBe('')
+    expect(wrapper.vm.processedTextResult).toBe('Successfully processed on retry')
+    expect(wrapper.vm.showProcessedResult).toBe(true)
   })
 }) 

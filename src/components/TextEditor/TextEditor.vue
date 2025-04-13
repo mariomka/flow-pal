@@ -46,7 +46,7 @@
         
         <div class="flex gap-2">
           <button
-            @click="processText(true)"
+            @click="processSelectedText"
             :disabled="isProcessing"
             class="rounded bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
           >
@@ -55,7 +55,7 @@
           </button>
           
           <button
-            @click="processText(false)"
+            @click="processSelectedText"
             :disabled="isProcessing"
             class="rounded bg-blue-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
           >
@@ -66,8 +66,26 @@
       </div>
       
       <div v-else class="flex flex-col gap-2">
-        <div v-if="processingError" class="text-sm text-red-500">
-          {{ processingError }}
+        <div v-if="processingError" class="w-full">
+          <div class="mb-2 text-xs text-red-500 dark:text-red-400">Error:</div>
+          <div class="mb-3 text-sm text-red-600 dark:text-red-300">
+            {{ processingError }}
+          </div>
+          <div class="mt-3 flex justify-end gap-2">
+            <button
+              @click="resetProcessing"
+              class="rounded bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+            >
+              Dismiss
+            </button>
+            
+            <button
+              @click="processSelectedText"
+              class="rounded bg-blue-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+            >
+              Retry
+            </button>
+          </div>
         </div>
         
         <div v-else class="w-full">
@@ -250,32 +268,43 @@ const handleMouseSelection = (event) => {
 }
 
 // Process selected text
-const processText = async (onlyGrammar = false) => {
+const processSelectedText = async () => {
   if (!selectedText.value) return
   
-  menuActive.value = true // Mark menu as actively being used
+  isProcessing.value = true
+  showProcessedResult.value = false
+  processingError.value = '' // Clear previous errors
   
   try {
-    isProcessing.value = true
-    processingError.value = ''
-    
-    const result = await textProcessor.processor(selectedText.value, {
-      onlyGrammar,
-      customInstructions: props.customInstructions,
-      writingStyle: props.writingStyle,
-      englishRegion: props.englishRegion
-    })
-    
-    processedTextResult.value = result
+    processedTextResult.value = await textProcessor.processor(
+      selectedText.value,
+      {
+        writingStyle: props.writingStyle,
+        englishRegion: props.englishRegion,
+        customInstructions: props.customInstructions
+      }
+    )
     showProcessedResult.value = true
+  } catch (err) {
+    // Format the error message to be more user-friendly
+    let errorMessage = err.message || 'An unknown error occurred'
     
-    // Ensure the menu stays visible
-    floatingMenuVisible.value = true
-  } catch (error) {
-    processingError.value = error.message || 'An error occurred while processing the text'
-    showProcessedResult.value = true
-    floatingMenuVisible.value = true
-    emit('error', processingError.value)
+    // Handle common error cases
+    if (errorMessage.includes('API key')) {
+      errorMessage = 'API key is missing or invalid. Please check your settings.'
+    } else if (errorMessage.includes('429')) {
+      errorMessage = 'Too many requests. Please try again later.'
+    } else if (errorMessage.includes('Network')) {
+      errorMessage = 'Network error. Please check your internet connection.'
+    } else if (errorMessage.includes('timeout')) {
+      errorMessage = 'Request timed out. Please try again.'
+    }
+    
+    processingError.value = errorMessage
+    showProcessedResult.value = true // Ensure error is displayed
+    
+    // Also emit the error to the parent component
+    emit('error', errorMessage)
   } finally {
     isProcessing.value = false
   }
