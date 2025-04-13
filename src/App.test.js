@@ -184,4 +184,17 @@ describe('App Component', () => {
     const footer = wrapper.find('main > div')
     expect(footer.exists()).toBe(true)
   })
+  
+  it('clears text when clear-text event is emitted from header', async () => {
+    // Set some initial text
+    wrapper.vm.inputText = 'Text to be cleared'
+    expect(wrapper.vm.inputText).toBe('Text to be cleared')
+    
+    // Get the header component and emit the clear-text event
+    const header = wrapper.findComponent({ name: 'Header' })
+    header.vm.$emit('clear-text')
+    
+    // Check that the text was cleared
+    expect(wrapper.vm.inputText).toBe('')
+  })
 }) 

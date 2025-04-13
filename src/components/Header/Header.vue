@@ -14,6 +14,15 @@
           </option>
         </select>
         <button 
+          @click="clearText"
+          class="flex items-center rounded-md p-1.5 text-xs transition-colors text-gray-600/60 hover:text-gray-800 dark:text-gray-400/60 dark:hover:text-white hover:bg-gray-100 focus:outline-none dark:hover:bg-gray-800"
+          aria-label="Clear text"
+        >
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
+        <button 
           @click="toggleSettings"
           class="flex items-center rounded-md p-1.5 text-xs transition-colors text-gray-600/60 hover:text-gray-800 dark:text-gray-400/60 dark:hover:text-white hover:bg-gray-100 focus:outline-none dark:hover:bg-gray-800"
           aria-label="Settings"
@@ -51,7 +60,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['toggle-settings', 'update:writing-style'])
+const emit = defineEmits(['toggle-settings', 'update:writing-style', 'clear-text'])
 
 const selectedStyle = ref(props.writingStyle)
 
@@ -61,6 +70,10 @@ function toggleSettings() {
 
 function updateWritingStyle() {
   emit('update:writing-style', selectedStyle.value)
+}
+
+function clearText() {
+  emit('clear-text')
 }
 </script>
 

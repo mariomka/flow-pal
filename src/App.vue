@@ -5,6 +5,7 @@
       :writing-styles="WRITING_STYLES"
       @update:writing-style="writingStyle = $event"
       @toggle-settings="showSettings = !showSettings"
+      @clear-text="clearText"
     />
     
     <main class="flex-1 flex flex-col overflow-hidden">
@@ -161,6 +162,18 @@ onMounted(() => {
     showSettings.value = true;
   }
 })
+
+function clearText() {
+  // Clear the input text
+  inputText.value = ''
+  // Focus the textarea after clearing - only in non-test environment
+  if (textareaRef.value && textareaRef.value.$el) {
+    const textarea = textareaRef.value.$el.querySelector('textarea')
+    if (textarea) {
+      textarea.focus()
+    }
+  }
+}
 </script>
 
 <style>

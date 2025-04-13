@@ -53,4 +53,11 @@ describe('Header Component', () => {
     expect(wrapper.emitted('update:writing-style')).toBeTruthy()
     expect(wrapper.emitted('update:writing-style')[0]).toEqual(['business'])
   })
+
+  it('emits clear-text event when clear button is clicked', async () => {
+    const wrapper = mount(Header)
+    await wrapper.find('button[aria-label="Clear text"]').trigger('click')
+    expect(wrapper.emitted('clear-text')).toBeTruthy()
+    expect(wrapper.emitted('clear-text').length).toBe(1)
+  })
 }) 
