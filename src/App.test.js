@@ -6,7 +6,9 @@ import App from './App.vue'
 vi.mock('./components/Header/Header.vue', () => ({
   default: {
     name: 'Header',
-    template: '<div data-testid="header"><slot /></div>'
+    template: '<div data-testid="header"><slot /></div>',
+    props: ['writingStyle', 'writingStyles'],
+    emits: ['toggle-settings', 'update:writing-style']
   }
 }))
 

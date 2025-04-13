@@ -1,6 +1,9 @@
 <template>
   <div class="h-screen min-h-screen bg-white dark:bg-gray-800 flex flex-col text-gray-900 dark:text-white overflow-hidden">
     <Header 
+      :writing-style="writingStyle"
+      :writing-styles="WRITING_STYLES"
+      @update:writing-style="writingStyle = $event"
       @toggle-settings="showSettings = !showSettings"
     />
     

@@ -2,7 +2,17 @@
   <header class="sticky top-0 z-10 bg-transparent dark:bg-transparent backdrop-blur-sm">
     <div class="flex items-center justify-between p-1.5 sm:p-1.5">
       <h1 class="text-sm font-normal text-gray-500/60 dark:text-gray-400/60 cursor-default uppercase tracking-wider">FlowPal</h1>
-      <div class="flex items-center space-x-1">
+      <div class="flex items-center space-x-2">
+        <select 
+          v-model="selectedStyle" 
+          @change="updateWritingStyle"
+          class="h-6 rounded-md border-0 bg-transparent px-2 py-0 text-xs text-gray-600/90 ring-0 focus:ring-0 dark:text-gray-400/90 appearance-none focus:outline-none cursor-pointer"
+          :class="{ 'opacity-70': selectedStyle === 'preserve' }"
+        >
+          <option v-for="style in writingStyles" :key="style.id" :value="style.id">
+            {{ style.label }}
+          </option>
+        </select>
         <button 
           @click="toggleSettings"
           class="flex items-center rounded-md p-1.5 text-xs transition-colors text-gray-600/60 hover:text-gray-800 dark:text-gray-400/60 dark:hover:text-white hover:bg-gray-100 focus:outline-none dark:hover:bg-gray-800"
@@ -21,10 +31,53 @@
 
 <script setup>
 import ThemeSwitcher from '../ThemeSwitcher.vue'
+import { ref } from 'vue'
 
-const emit = defineEmits(['toggle-settings'])
+const props = defineProps({
+  writingStyle: {
+    type: String,
+    default: 'preserve'
+  },
+  writingStyles: {
+    type: Array,
+    default: () => [
+      { id: 'preserve', label: 'Default' },
+      { id: 'business', label: 'Business' },
+      { id: 'technical', label: 'Technical' },
+      { id: 'casual', label: 'Casual' },
+      { id: 'marketing', label: 'Marketing' },
+      { id: 'simple', label: 'Simple' }
+    ]
+  }
+})
+
+const emit = defineEmits(['toggle-settings', 'update:writing-style'])
+
+const selectedStyle = ref(props.writingStyle)
 
 function toggleSettings() {
   emit('toggle-settings')
 }
-</script> 
+
+function updateWritingStyle() {
+  emit('update:writing-style', selectedStyle.value)
+}
+</script>
+
+<style scoped>
+/* Custom select appearance */
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23606060'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-position: right 0.25rem center;
+  background-repeat: no-repeat;
+  background-size: 1em 1em;
+  padding-right: 1.5rem;
+}
+
+/* Dark mode select dropdown icon */
+@media (prefers-color-scheme: dark) {
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23909090'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  }
+}
+</style> 
