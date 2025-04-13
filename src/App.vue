@@ -14,8 +14,21 @@
         :english-region="englishRegion"
         :custom-instructions="customInstructions"
         ref="textareaRef"
-        class="flex-1 h-full"
+        class="flex-1"
       />
+      
+      <!-- Footer with GitHub Link -->
+      <div class="py-1 px-2 text-right flex justify-between items-center">
+        <a 
+          href="https://github.com/mariomka/flow-pal" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="text-xs text-gray-400 hover:text-gray-600 dark:text-gray-600 dark:hover:text-gray-400 opacity-80 hover:opacity-100 transition-opacity"
+        >
+          GitHub
+        </a>
+        <div></div> <!-- Empty div for flex alignment -->
+      </div>
     </main>
 
     <!-- Error Toast -->
@@ -52,16 +65,6 @@
       @update:custom-instructions="customInstructions = $event"
       @close="showSettings = false"
     />
-    
-    <!-- GitHub Repository Link -->
-    <a 
-      href="https://github.com/mariomka/flow-pal" 
-      target="_blank" 
-      rel="noopener noreferrer"
-      class="fixed bottom-2 left-2 text-xs text-gray-400 hover:text-gray-600 dark:text-gray-600 dark:hover:text-gray-400 opacity-80 hover:opacity-100 transition-opacity"
-    >
-      GitHub
-    </a>
   </div>
 </template>
 
