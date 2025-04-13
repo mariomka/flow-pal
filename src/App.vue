@@ -52,6 +52,16 @@
       @update:custom-instructions="customInstructions = $event"
       @close="showSettings = false"
     />
+    
+    <!-- GitHub Repository Link -->
+    <a 
+      href="https://github.com/mariomka/flow-pal" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      class="fixed bottom-2 left-2 text-xs text-gray-400 hover:text-gray-600 dark:text-gray-600 dark:hover:text-gray-400 opacity-80 hover:opacity-100 transition-opacity"
+    >
+      GitHub
+    </a>
   </div>
 </template>
 
