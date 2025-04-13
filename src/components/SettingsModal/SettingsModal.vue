@@ -193,22 +193,6 @@
             </div>
           </div>
         </div>
-        
-        <!-- Footer -->
-        <div class="flex justify-end p-3 border-t border-gray-200 dark:border-gray-700 gap-2">
-          <button 
-            @click="closeModal" 
-            class="px-3 py-1.5 text-xs bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
-          >
-            Cancel
-          </button>
-          <button 
-            @click="saveSettings" 
-            class="px-3 py-1.5 text-xs bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-          >
-            Save
-          </button>
-        </div>
       </div>
     </div>
   </div>
@@ -216,6 +200,7 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
+import { debounce } from 'lodash-es'
 
 const props = defineProps({
   show: {
@@ -345,19 +330,49 @@ watch(() => props.lineHeight, (newValue) => {
   lineHeightValue.value = newValue
 })
 
-function closeModal() {
-  emit('close')
-}
+// Create debounced versions of the update functions
+const debouncedUpdateCustomInstructions = debounce((value) => {
+  emit('update:custom-instructions', value)
+}, 500)
 
-function saveSettings() {
-  emit('update:api-key', apiKeyValue.value)
-  emit('update:writing-style', writingStyleValue.value)
-  emit('update:english-region', englishRegionValue.value)
-  emit('update:custom-instructions', customInstructionsValue.value)
-  emit('update:font-family', fontFamilyValue.value)
-  emit('update:font-size', fontSizeValue.value)
-  emit('update:line-height', lineHeightValue.value)
-  closeModal()
+const debouncedUpdateApiKey = debounce((value) => {
+  emit('update:api-key', value)
+}, 500)
+
+// Use immediate update for dropdowns, debounced for text inputs
+watch(apiKeyValue, (newValue) => {
+  debouncedUpdateApiKey(newValue)
+})
+
+watch(writingStyleValue, (newValue) => {
+  emit('update:writing-style', newValue)
+})
+
+watch(englishRegionValue, (newValue) => {
+  emit('update:english-region', newValue)
+})
+
+watch(customInstructionsValue, (newValue) => {
+  debouncedUpdateCustomInstructions(newValue)
+})
+
+watch(fontFamilyValue, (newValue) => {
+  emit('update:font-family', newValue)
+})
+
+watch(fontSizeValue, (newValue) => {
+  emit('update:font-size', newValue)
+})
+
+watch(lineHeightValue, (newValue) => {
+  emit('update:line-height', newValue)
+})
+
+function closeModal() {
+  // Make sure any pending debounced updates are applied
+  debouncedUpdateCustomInstructions.flush()
+  debouncedUpdateApiKey.flush()
+  emit('close')
 }
 
 function getStyleDescription() {
