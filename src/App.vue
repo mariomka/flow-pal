@@ -17,7 +17,7 @@
         class="flex-1"
       />
       
-      <!-- Footer with GitHub Link -->
+      <!-- Footer with GitHub Link and Word Count -->
       <div class="py-1 px-2 text-right flex justify-between items-center">
         <a 
           href="https://github.com/mariomka/flow-pal" 
@@ -27,7 +27,9 @@
         >
           GitHub
         </a>
-        <div></div> <!-- Empty div for flex alignment -->
+        <div class="text-xs text-gray-400 dark:text-gray-600">
+          {{ wordCount }} words, {{ charCount }} characters
+        </div>
       </div>
     </main>
 
@@ -69,7 +71,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 
 // Import components
 import Header from './components/Header/Header.vue'
@@ -114,6 +116,19 @@ const customInstructions = ref(localStorage.getItem(STORAGE_KEYS.CUSTOM_INSTRUCT
 const textareaRef = ref(null)
 const openAIKey = ref(localStorage.getItem(STORAGE_KEYS.API_KEY) || '')
 const showSettings = ref(false)
+
+// Computed properties for word and character count
+const charCount = computed(() => inputText.value.length)
+const wordCount = computed(() => {
+  if (!inputText.value.trim()) return 0
+  
+  // Count words by splitting on whitespace
+  return inputText.value
+    .trim()
+    .split(/\s+/)
+    .filter(word => word.length > 0)
+    .length
+})
 
 // Watch for changes and save to localStorage
 watch(inputText, (newValue) => {

@@ -126,4 +126,62 @@ describe('App Component', () => {
     expect(localStorage.setItem).toHaveBeenCalledWith('writer-english-region', 'au')
     expect(localStorage.setItem).toHaveBeenCalledWith('openai_api_key', 'test-api-key')
   })
+  
+  it('calculates character count correctly', async () => {
+    // Set different text values and check character count
+    wrapper.vm.inputText = ''
+    expect(wrapper.vm.charCount).toBe(0)
+    
+    wrapper.vm.inputText = 'Hello'
+    expect(wrapper.vm.charCount).toBe(5)
+    
+    wrapper.vm.inputText = 'Hello, world!'
+    expect(wrapper.vm.charCount).toBe(13)
+    
+    wrapper.vm.inputText = 'Hello\nworld'
+    expect(wrapper.vm.charCount).toBe(11)
+  })
+  
+  it('calculates word count correctly', async () => {
+    // Empty text
+    wrapper.vm.inputText = ''
+    expect(wrapper.vm.wordCount).toBe(0)
+    
+    // Single word
+    wrapper.vm.inputText = 'Hello'
+    expect(wrapper.vm.wordCount).toBe(1)
+    
+    // Multiple words
+    wrapper.vm.inputText = 'Hello world'
+    expect(wrapper.vm.wordCount).toBe(2)
+    
+    // Words with punctuation
+    wrapper.vm.inputText = 'Hello, world!'
+    expect(wrapper.vm.wordCount).toBe(2)
+    
+    // Extra spaces
+    wrapper.vm.inputText = '  Hello   world  '
+    expect(wrapper.vm.wordCount).toBe(2)
+    
+    // Newlines
+    wrapper.vm.inputText = 'Hello\nworld'
+    expect(wrapper.vm.wordCount).toBe(2)
+    
+    // Multiple spaces and newlines
+    wrapper.vm.inputText = 'Hello\n\nworld  and  universe'
+    expect(wrapper.vm.wordCount).toBe(4)
+  })
+  
+  it('displays word and character count in the footer', async () => {
+    wrapper.vm.inputText = 'Hello world'
+    await flushPromises()
+    
+    // Check that the computed values are correct
+    expect(wrapper.vm.wordCount).toBe(2)
+    expect(wrapper.vm.charCount).toBe(11)
+    
+    // Verify that the component exists (even if stubbed)
+    const footer = wrapper.find('main > div')
+    expect(footer.exists()).toBe(true)
+  })
 }) 
