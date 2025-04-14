@@ -55,7 +55,7 @@
         
         <div class="flex gap-2">
           <button
-            @click="processSelectedText"
+            @click="processSelectedText('fix')"
             :disabled="isProcessing"
             class="rounded bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
           >
@@ -64,7 +64,7 @@
           </button>
           
           <button
-            @click="processSelectedText"
+            @click="processSelectedText('improve')"
             :disabled="isProcessing"
             class="rounded bg-blue-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
           >
@@ -89,7 +89,7 @@
             </button>
             
             <button
-              @click="processSelectedText"
+              @click="retryProcessing"
               class="rounded bg-blue-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
             >
               Retry
@@ -195,6 +195,7 @@ const selectionChangeHandler = ref(null)
 const menuActive = ref(false)  // Track if the menu is intentionally active
 const showDiffView = ref(false) // Toggle for diff view
 const isMouseSelecting = ref(false); // Flag to track mouse selection
+const currentAction = ref(null); // Store the current action ('fix' or 'improve')
 
 // Watch for prop changes
 watch(() => props.text, (newValue) => {
@@ -371,21 +372,26 @@ const getCaretCoordinates = (element, position) => {
 };
 
 // Process selected text
-const processSelectedText = async () => {
+const processSelectedText = async (actionType) => {
   if (!selectedText.value) return
   
+  currentAction.value = actionType; // Store the action type
   isProcessing.value = true
   showProcessedResult.value = false
   processingError.value = '' // Clear previous errors
   
   try {
+    // Prepare options for the processor, including all relevant props
+    let processorOptions = {
+      englishRegion: props.englishRegion,
+      writingStyle: props.writingStyle, 
+      customInstructions: props.customInstructions,
+      onlyGrammar: currentAction.value === 'fix' 
+    };
+
     processedTextResult.value = await textProcessor.processor(
       selectedText.value,
-      {
-        writingStyle: props.writingStyle,
-        englishRegion: props.englishRegion,
-        customInstructions: props.customInstructions
-      }
+      processorOptions // Pass the complete options object
     )
     showProcessedResult.value = true
   } catch (err) {
@@ -411,6 +417,14 @@ const processSelectedText = async () => {
   } finally {
     isProcessing.value = false
   }
+}
+
+// Add a dedicated retry function
+const retryProcessing = () => {
+  if (currentAction.value) {
+    processSelectedText(currentAction.value); // Retry with the stored action
+  }
+  // Optionally handle the case where currentAction is null, though it shouldn't happen if retry is only visible after an error
 }
 
 // Apply the processed text
@@ -451,6 +465,7 @@ const resetProcessing = () => {
   isTextSelected.value = false
   selectionRange.value = null
   showDiffView.value = false // Reset diff view too
+  currentAction.value = null; // Clear the stored action
 }
 
 // Click outside handler
